@@ -5,6 +5,7 @@ rpc = Blueprint('rpc', __name__, url_prefix='/api')
 
 
 def send_to_parent(kind, *args):
+    '''similar to the behaviour of a ParentedLet'''
     if not hasattr(current_app, 'queue'):
         logging.debug('no parent queue; aborting send')
         return

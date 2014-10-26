@@ -1,3 +1,7 @@
+Flask==0.10.1
+Jinja2==2.7.3
+MarkupSafe==0.23
+Werkzeug==0.9.6
 amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.18
@@ -5,10 +9,12 @@ celery==3.1.16
 eventlet==0.15.2
 gevent==1.0.1
 greenlet==0.4.5
+itsdangerous==0.24
 kombu==3.0.23
 py==1.4.26
 pyinotify==0.9.4
 pytest==2.6.4
+python-mpd2==0.5.3
 pytz==2014.7
 redis==2.10.3
 wsgiref==0.1.2
