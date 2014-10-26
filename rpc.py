@@ -1,3 +1,4 @@
+from __future__ import print_function
 import logging
 
 from flask import current_app, Blueprint, Flask
@@ -25,7 +26,6 @@ def rpc_index():
 
 @rpc.route('/refresh')
 def rpc_refresh():
-    print current_app.queue
     send_to_parent('rpc')
     return 'ok, put'
 

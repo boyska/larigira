@@ -5,18 +5,11 @@ monkey.patch_all(subprocess=True)
 import pytest
 
 import gevent
-from gevent.queue import Queue
 
 from mpc import Timer, ParentedLet
 
 # TODO: implement simple children and check that we will receive the expected
 # messages on the queue
-
-
-@pytest.fixture
-def queue():
-    print('fixture q')
-    return Queue()
 
 
 @pytest.fixture
