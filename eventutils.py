@@ -49,3 +49,19 @@ class CeleryTask(ParentedLet):
                                          **self.apply_async_args)
         val = asyncres.get()
         yield ('celery', val)
+
+
+class Timer(ParentedLet):
+    def __init__(self, milliseconds, queue):
+        ParentedLet.__init__(self, queue)
+        self.ms = milliseconds
+
+    def parent_msg(self, kind, *args):
+        msg = ParentedLet.parent_msg(self, kind, *args)
+        msg['period'] = self.ms
+        return msg
+
+    def do_business(self):
+        while True:
+            gevent.sleep(self.ms / 1000.0)
+            yield ('timer', )

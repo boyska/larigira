@@ -12,7 +12,7 @@ import gevent
 from gevent.queue import Queue
 
 
-from eventutils import ParentedLet, CeleryTask
+from eventutils import ParentedLet, CeleryTask, Timer
 from task import create as create_continous
 
 
@@ -24,22 +24,6 @@ class MpcWatcher(ParentedLet):
         while True:
             status = check_output(['mpc', 'idle']).decode('utf-8').strip()
             yield ('mpc', status)
-
-
-class Timer(ParentedLet):
-    def __init__(self, milliseconds, queue):
-        ParentedLet.__init__(self, queue)
-        self.ms = milliseconds
-
-    def parent_msg(self, kind, *args):
-        msg = ParentedLet.parent_msg(self, kind, *args)
-        msg['period'] = self.ms
-        return msg
-
-    def do_business(self):
-        while True:
-            gevent.sleep(self.ms / 1000.0)
-            yield ('timer', )
 
 
 class Player(gevent.Greenlet):
