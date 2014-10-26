@@ -10,10 +10,12 @@ from subprocess import check_output
 
 import gevent
 from gevent.queue import Queue
+from gevent.wsgi import WSGIServer
 
 
 from eventutils import ParentedLet, CeleryTask, Timer
 from task import create as create_continous
+import rpc
 
 
 class MpcWatcher(ParentedLet):
@@ -45,6 +47,8 @@ class Player(gevent.Greenlet):
     def _run(self):
         MpcWatcher(self.q).start()
         Timer(6000, self.q).start()
+        http_server = WSGIServer(('', 5000), rpc.create_app(self.q))
+        http_server.start()
         while True:
             value = self.q.get()
             # emitter = value['emitter']
