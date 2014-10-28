@@ -80,7 +80,7 @@ def on_player_crash(*args, **kwargs):
     sys.exit(1)
 
 
-if __name__ == '__main__':
+def main():
     p = Player()
     p.start()
     p.link_exception(on_player_crash)
@@ -90,3 +90,6 @@ if __name__ == '__main__':
         p.q.put('signal', *args)
     gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
     gevent.wait()
+
+if __name__ == '__main__':
+    main()

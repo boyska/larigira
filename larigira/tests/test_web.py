@@ -4,7 +4,7 @@ monkey.patch_all(subprocess=True)
 
 import pytest
 
-from rpc import create_app
+from larigira.rpc import create_app
 
 
 @pytest.fixture
