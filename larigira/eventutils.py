@@ -12,11 +12,13 @@ class ParentedLet(gevent.Greenlet):
     def __init__(self, queue):
         gevent.Greenlet.__init__(self)
         self.parent_queue = queue
+        self.tracker = None  # set this to recognize easily
 
     def parent_msg(self, kind, *args):
         return {
             'emitter': self,
             'class': self.__class__.__name__,
+            'tracker': self.tracker,
             'kind': kind,
             'args': args
         }

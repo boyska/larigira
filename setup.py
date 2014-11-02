@@ -1,7 +1,13 @@
 import sys
+import os
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
+
+
+def read(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as buf:
+        return buf.read()
 
 
 class PyTest(TestCommand):
@@ -25,6 +31,7 @@ class PyTest(TestCommand):
 setup(name='larigira',
       version='0.1',
       description='A radio automation based on MPD',
+      long_description=read('README.rst'),
       author='boyska',
       author_email='piuttosto@logorroici.org',
       license='AGPL',
@@ -32,9 +39,7 @@ setup(name='larigira',
       install_requires=[
           'gevent',
           'flask',
-          'python-mpd2',
-          'redis',
-          'celery'
+          'python-mpd2'
       ],
       tests_require=['pytest'],
       cmdclass={'test': PyTest},
@@ -43,6 +48,7 @@ setup(name='larigira',
           'console_scripts': ['larigira=larigira.mpc:main',
                               'larigira-audiogen=larigira.audiogen:main'],
           'larigira.audiogenerators': [
+              'mpd = larigira.audiogen_mpdrandom:generate_by_artist',
               'static = larigira.audiogen_static:generate',
               'randomdir = larigira.audiogen_randomdir:generate'
           ]
