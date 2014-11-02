@@ -40,6 +40,11 @@ setup(name='larigira',
       cmdclass={'test': PyTest},
       zip_safe=False,
       entry_points={
-          'console_scripts': ['larigira=larigira.mpc:main']
+          'console_scripts': ['larigira=larigira.mpc:main',
+                              'larigira-audiogen=larigira.audiogen:main'],
+          'larigira.audiogenerators': [
+              'static = larigira.audiogen_static:generate',
+              'randomdir = larigira.audiogen_randomdir:generate'
+          ]
       }
       )
