@@ -38,7 +38,7 @@ def check_spec(spec):
         yield "Missing field 'kind'"
 
 
-def generate(spec):
+def audiogenerate(spec):
     gen = get_audiogenerator(spec['kind'])
     return tuple(gen(spec))
 
@@ -53,7 +53,7 @@ def main():
         for err in errors:
             print(err)  # TODO: to stderr
         sys.exit(1)
-    for path in generate(spec):
+    for path in audiogenerate(spec):
         print(path)
 
 

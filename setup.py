@@ -41,16 +41,21 @@ setup(name='larigira',
           'flask',
           'python-mpd2'
       ],
-      tests_require=['pytest'],
+      tests_require=['pytest', 'pytest-timeout'],
       cmdclass={'test': PyTest},
       zip_safe=False,
       entry_points={
           'console_scripts': ['larigira=larigira.mpc:main',
+                              'larigira-timegen=larigira.timegen:main',
                               'larigira-audiogen=larigira.audiogen:main'],
           'larigira.audiogenerators': [
               'mpd = larigira.audiogen_mpdrandom:generate_by_artist',
               'static = larigira.audiogen_static:generate',
               'randomdir = larigira.audiogen_randomdir:generate'
+          ],
+          'larigira.timegenerators': [
+              'frequency = larigira.timegen_every:FrequencyAlarm',
+              'single = larigira.timegen_every:SingleAlarm',
           ]
       }
       )
