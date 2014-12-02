@@ -29,7 +29,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 setup(name='larigira',
-      version='0.1',
+      version='0.1.1',
       description='A radio automation based on MPD',
       long_description=read('README.rst'),
       author='boyska',
@@ -39,7 +39,8 @@ setup(name='larigira',
       install_requires=[
           'gevent',
           'flask',
-          'python-mpd2'
+          'python-mpd2',
+          'pyejdb'
       ],
       tests_require=['pytest', 'pytest-timeout'],
       cmdclass={'test': PyTest},
