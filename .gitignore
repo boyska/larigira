@@ -5,3 +5,5 @@
 build
 /*.egg/
 /*.egg
+larigira.db
+larigira.db_*
