@@ -40,7 +40,7 @@ setup(name='larigira',
           'gevent',
           'flask',
           'python-mpd2',
-          'pyejdb'
+          'tinydb'
       ],
       tests_require=['pytest', 'pytest-timeout'],
       cmdclass={'test': PyTest},

@@ -12,21 +12,50 @@ from datetime import datetime, timedelta
 
 import gevent
 from gevent.queue import Queue
+from tinydb import TinyDB
 
 from eventutils import ParentedLet
 from timegen import timegenerate
 from audiogen import audiogenerate
 
 
+class EventModel(object):
+    def __init__(self, uri):
+        self.uri = uri
+        self.db = TinyDB(uri)
+        self.actions = self.db.table('actions')
+        self.alarms = self.db.table('alarms')
+
+    def get_action_by_id(self, action_id):
+        return self.actions.get(eid=action_id)
+
+    def get_alarm_by_id(self, alarm_id):
+        return self.alarms.get(eid=alarm_id)
+
+    def get_actions_by_alarm(self, alarm):
+        for action_id in alarm.get('actions', []):
+            yield self.get_action_by_id(action_id)
+
+    def get_all_alarms(self):
+        return self.alarms.all()
+
+    def get_all_alarms_expanded(self):
+        for alarm in self.get_all_alarms():
+            for action in self.get_actions_by_alarm(alarm):
+                yield alarm, action
+
+    def add_event(self, alarm, actions):
+        action_ids = [self.actions.insert(a) for a in actions]
+        alarm['actions'] = action_ids
+        return self.alarms.insert(alarm)
+
+
 class EventSource(ParentedLet):
     def __init__(self, queue, uri):
         ParentedLet.__init__(self, queue)
-        import pyejdb
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.debug('uri is %s' % uri)
-        self.ejdb = pyejdb.EJDB(uri,
-                                pyejdb.JBOREADER | pyejdb.JBOLCKNB |
-                                pyejdb.JBOTRUNC)
+        self.model = EventModel(uri)
         self.log.debug('opened %s' % uri)
 
     def parent_msg(self, kind, *args):
@@ -38,40 +67,16 @@ class EventSource(ParentedLet):
             msg = ParentedLet.parent_msg(self, kind, *args)
         return msg
 
-    def _get_actions_by_alarm(self, alarm):
-        if 'actions' not in alarm:
-            return
-        for action_id in alarm['actions']:
-            with self.ejdb.find('actions',
-                                {'_id': action_id}) as subcur:
-                for action in subcur:
-                    yield action
-
-    def _get_by_alarmid(self, alarmid):
-        with self.ejdb.find('alarms', {'_id': alarmid}) as cur:
-            if len(cur) > 1:
-                self.log.warn("Found more than one alarm with given id")
-            for alarm in cur:
-                for action in self._get_actions_by_alarm(alarm):
-                    yield alarm, action
-
-    def reload(self):
-        with self.ejdb.find('alarms', {}) as cur:
-            for alarm in cur:
-                self.log.info('%s\t%s' % (alarm['kind'],
-                                          ', '.join(alarm.keys())))
-                for action in self._get_actions_by_alarm(alarm):
-                    yield alarm, action
-
-    def reload_id(self, event_id):
+    def reload_id(self, alarm_id):
         '''
         Check if the event is still valid, and put "add" messages on queue
         '''
-        for alarm, action in self._get_by_alarmid(event_id):
+        alarm = self.model.get_alarm_by_id(alarm_id)
+        for action in self.model.get_actions_by_alarm(alarm):
             self.send_to_parent('add', alarm, action)
 
     def do_business(self):
-        for alarm, action in self.reload():
+        for alarm, action in self.model.get_all_alarms_expanded():
             yield ('add', alarm, action)
 
 

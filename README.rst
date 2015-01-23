@@ -16,7 +16,7 @@ Software stack
 * python2
   * gevent as an async framework
   * flask to provide web interface and rpc
-* ejdb as an embedded database
+* tinydb as an embedded database
 
 Why? (aka design features)
 --------------------------
