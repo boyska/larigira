@@ -74,7 +74,10 @@ class Player(gevent.Greenlet):
     def enqueue(self, songs):
         mpd_client = self._get_mpd()
         for song in songs:
-            mpd_client.addid(song, 1)
+            self.log.info('Adding {} to playlist'.format(song))
+            print(mpd_client.playlistid())
+            pos = min(1, len(mpd_client.playlistid()))
+            mpd_client.addid(song, pos)
 
     def _run(self):
         MpcWatcher(self.q, self.conf, client=None).start()
@@ -106,6 +109,7 @@ def on_player_crash(*args, **kwargs):
 def main():
     # TODO: update conf from somewhere
     conf['DB_URI'] = 'larigira.db'
+    logging.basicConfig(level=logging.DEBUG)
     p = Player(conf)
     p.start()
     # TODO: if <someoption> create Monitor(p.q)

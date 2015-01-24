@@ -48,7 +48,8 @@ setup(name='larigira',
       entry_points={
           'console_scripts': ['larigira=larigira.mpc:main',
                               'larigira-timegen=larigira.timegen:main',
-                              'larigira-audiogen=larigira.audiogen:main'],
+                              'larigira-audiogen=larigira.audiogen:main',
+                              'larigira-dbmanage=larigira.event_manage:main'],
           'larigira.audiogenerators': [
               'mpd = larigira.audiogen_mpdrandom:generate_by_artist',
               'static = larigira.audiogen_static:generate',

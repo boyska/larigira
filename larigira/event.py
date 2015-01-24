@@ -77,6 +77,7 @@ class EventSource(ParentedLet):
 
     def do_business(self):
         for alarm, action in self.model.get_all_alarms_expanded():
+            self.log.debug('scheduling {}'.format(alarm))
             yield ('add', alarm, action)
 
 
@@ -95,25 +96,32 @@ class Monitor(ParentedLet):
         could call this method again
         '''
         now = datetime.now() + timedelta(seconds=self.conf['CACHING_TIME'])
-        when = next(timegenerate(timespec, now=now))
+        try:
+            when = next(timegenerate(timespec, now=now))
+        except:
+            logging.exception("Could not generate "
+                              "an alarm from timespec {}".format(timespec))
         delta = when - now
         assert delta.total_seconds() > 0
         self.log.info('Will run after %d seconds' % delta.total_seconds())
 
         audiogen = gevent.spawn_later(delta.total_seconds(), audiogenerate,
                                       audiospec)
-        self.running[timespec['_id']] = audiogen
+        self.running[timespec.eid] = audiogen
         gevent.spawn_later(delta.total_seconds(),
                            self.source.reload_id,
-                           timespec['_id'])
+                           timespec.eid)
         # FIXME: audiogen is ready in a moment between
         # exact_time - CACHING_TIME and the exact_time
         # atm we are just ignoring this "window", saying that any moment is
         # fine
         # the more correct thing will be to wait till that exact moment
         # adding another spawn_later
-        audiogen.link(lambda g: self.log.info('should play %s' % str(g.value)))
-        audiogen.link(lambda g: self.send_to_parent('add', g.value))
+        audiogen.link_value(lambda g: self.log.info(
+            'should play %s' % str(g.value)))
+        audiogen.link_exception(lambda g: self.log.exception(
+            'Failure in audiogen {}'.format(audiospec)))
+        audiogen.link_value(lambda g: self.send_to_parent('add', g.value))
 
     def _run(self):
         self.source.start()

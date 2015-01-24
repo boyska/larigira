@@ -1,7 +1,9 @@
 from __future__ import print_function
 import logging
+import gc
+from greenlet import greenlet
 
-from flask import current_app, Blueprint, Flask
+from flask import current_app, Blueprint, Flask, jsonify
 rpc = Blueprint('rpc', __name__, url_prefix='/api')
 
 
@@ -21,13 +23,28 @@ def send_to_parent(kind, *args):
 
 @rpc.route('/')
 def rpc_index():
-    return 'So, what command would you like to give?'
+    rules = list(current_app.url_map.iter_rules())
+    return jsonify({'rules': [r.rule for r in rules
+                              if r.rule.startswith('/api')]})
 
 
 @rpc.route('/refresh')
 def rpc_refresh():
     send_to_parent('rpc')
-    return 'ok, put'
+    return jsonify(dict(status='ok'))
+
+
+@rpc.route('/debug/running')
+def rpc_wip():
+    greenlets = []
+    for ob in filter(lambda obj: isinstance(obj, greenlet),
+                     gc.get_objects()):
+        greenlets.append({
+            'repr': repr(ob),
+            'class': ob.__class__.__name__,
+            'parent': repr(ob.parent)
+        })
+    return jsonify(dict(greenlets=greenlets))
 
 
 def create_app(queue):
