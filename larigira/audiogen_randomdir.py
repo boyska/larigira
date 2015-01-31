@@ -24,7 +24,8 @@ def generate(spec):
         - paths [mandatory]    list of source paths
         - howmany [mandatory]  number of audio files to pick
     '''
-    for attr in ('paths', 'howmany'):
+    spec.setdefault('howmany', 1)
+    for attr in ('paths', ):
         if attr not in spec:
             raise ValueError("Malformed audiospec: missing '%s'" % attr)
 

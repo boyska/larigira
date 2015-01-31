@@ -7,10 +7,7 @@ from mpd import MPDClient
 
 def generate_by_artist(spec):
     '''choose HOWMANY random artists, and for each one choose a random song'''
-    for attr in ('howmany',):
-        if attr not in spec:
-            raise ValueError("Malformed audiospec: missing '%s'" % attr)
-
+    spec.setdefault('howmany', 1)
     log.info('generating')
     c = MPDClient()
     c.connect('localhost', 6600)  # TODO: read global options somehow
