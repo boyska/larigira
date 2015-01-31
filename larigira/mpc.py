@@ -1,7 +1,6 @@
 from __future__ import print_function
 from gevent import monkey
 monkey.patch_all(subprocess=True)
-import os
 
 import logging
 FORMAT = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
@@ -19,12 +18,7 @@ from eventutils import ParentedLet, Timer
 import rpc
 from audiogen import audiogenerate
 from event import Monitor
-
-conf = {}
-conf['CONTINOUS_AUDIODESC'] = dict(kind='mpd', howmany=1)
-conf['MPD_HOST'] = os.getenv('MPD_HOST', 'localhost')
-conf['MPD_PORT'] = int(os.getenv('MPD_PORT', '6600'))
-conf['CACHING_TIME'] = 10
+from .config import get_conf
 
 
 class MpcWatcher(ParentedLet):
@@ -107,8 +101,7 @@ def on_player_crash(*args, **kwargs):
 
 
 def main():
-    # TODO: update conf from somewhere
-    conf['DB_URI'] = 'larigira.db'
+    conf = get_conf()
     logging.basicConfig(level=logging.DEBUG)
     p = Player(conf)
     p.start()

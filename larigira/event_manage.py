@@ -3,6 +3,7 @@ import argparse
 from pprint import pprint
 
 from .event import EventModel
+from .config import get_conf
 
 
 def main_list(args):
@@ -19,8 +20,10 @@ def main_add(args):
 
 
 def main():
+    conf = get_conf()
     p = argparse.ArgumentParser()
-    p.add_argument('-f', '--file', help="Filepath for DB", required=True)
+    p.add_argument('-f', '--file', help="Filepath for DB", required=False,
+                   default=conf['DB_URI'])
     sub = p.add_subparsers()
     sub_list = sub.add_parser('list')
     sub_list.set_defaults(func=main_list)
