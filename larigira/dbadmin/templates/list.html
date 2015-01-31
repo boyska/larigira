@@ -1,0 +1,24 @@
+<html>
+<meta>
+<title>Larigira - DB list</title>
+</meta>
+<body>
+	<div class="main">
+		{% for e, actions in events %}
+		<div class="event">
+			<h2>Event {{e.eid}}</h2>
+			<pre>{{ e }}</pre>
+			<div class="actions">
+				<h3>Actions</h3>
+				<ol>
+					{% for a in actions %}
+					<li><pre>{{ a }}</pre></li>
+					{% endfor %}
+				</ol>
+			</div>{# actions #}
+		</div>{# event #}
+		{% endfor %}
+	</div>{# main #}
+</body>
+</html>
+{# vim: set ts=2 sw=2 noet: #}

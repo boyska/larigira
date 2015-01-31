@@ -4,6 +4,9 @@ import gc
 from greenlet import greenlet
 
 from flask import current_app, Blueprint, Flask, jsonify
+
+from .dbadmin import db
+
 rpc = Blueprint('rpc', __name__, url_prefix='/api')
 
 
@@ -66,6 +69,7 @@ def rpc_wip():
 def create_app(queue, larigira):
     app = Flask(__name__)
     app.register_blueprint(rpc)
+    app.register_blueprint(db)
     app.queue = queue
     app.larigira = larigira
     return app
