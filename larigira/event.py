@@ -7,7 +7,6 @@ logging.basicConfig(level=logging.INFO,
                     format=FORMAT,
                     datefmt='%H:%M:%S')
 logging.getLogger('mpd').setLevel(logging.WARNING)
-import signal
 from datetime import datetime, timedelta
 
 import gevent
@@ -135,25 +134,3 @@ class Monitor(ParentedLet):
                 raise NotImplementedError()
             else:
                 self.log.warning("Unknown message: %s" % str(value))
-
-
-def on_player_crash(*args, **kwargs):
-    print('A crash occurred in "main" greenlet. Aborting...')
-    import sys
-    sys.exit(1)
-
-
-def main():
-    conf = dict(CACHING_TIME=10, DB_URI='larigira.db')
-    monitor = Monitor(Queue(), conf)
-    monitor.start()
-    monitor.link_exception(on_player_crash)
-
-    def sig(*args):
-        print('invoked sig', args)
-        monitor.q.put('signal', *args)
-    gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
-    gevent.wait()
-
-if __name__ == '__main__':
-    main()

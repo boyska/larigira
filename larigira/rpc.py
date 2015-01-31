@@ -47,8 +47,9 @@ def rpc_wip():
     return jsonify(dict(greenlets=greenlets))
 
 
-def create_app(queue):
+def create_app(queue, larigira):
     app = Flask(__name__)
     app.register_blueprint(rpc)
     app.queue = queue
+    app.larigira = larigira
     return app

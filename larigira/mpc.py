@@ -1,24 +1,12 @@
 from __future__ import print_function
-from gevent import monkey
-monkey.patch_all(subprocess=True)
-
 import logging
-FORMAT = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
-logging.basicConfig(level=logging.INFO,
-                    format=FORMAT,
-                    datefmt='%H:%M:%S')
-import signal
 
 import gevent
 from gevent.queue import Queue
-from gevent.wsgi import WSGIServer
 from mpd import MPDClient
 
 from eventutils import ParentedLet, Timer
-import rpc
 from audiogen import audiogenerate
-from event import Monitor
-from .config import get_conf
 
 
 class MpcWatcher(ParentedLet):
@@ -50,7 +38,6 @@ class Player(gevent.Greenlet):
 
     def _get_mpd(self):
         mpd_client = MPDClient()
-        # TODO: use config values
         mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
         return mpd_client
 
@@ -69,15 +56,12 @@ class Player(gevent.Greenlet):
         mpd_client = self._get_mpd()
         for song in songs:
             self.log.info('Adding {} to playlist'.format(song))
-            print(mpd_client.playlistid())
             pos = min(1, len(mpd_client.playlistid()))
             mpd_client.addid(song, pos)
 
     def _run(self):
         MpcWatcher(self.q, self.conf, client=None).start()
         Timer(60 * 1000, self.q).start()
-        http_server = WSGIServer(('', 5000), rpc.create_app(self.q))
-        http_server.start()
         while True:
             value = self.q.get()
             self.log.debug('<- %s' % str(value))
@@ -92,30 +76,3 @@ class Player(gevent.Greenlet):
                 self.enqueue(args[0])
             else:
                 self.log.warning("Unknown message: %s" % str(value))
-
-
-def on_player_crash(*args, **kwargs):
-    print('A crash occurred in "main" greenlet. Aborting...')
-    import sys
-    sys.exit(1)
-
-
-def main():
-    conf = get_conf()
-    logging.basicConfig(level=logging.DEBUG)
-    p = Player(conf)
-    p.start()
-    # TODO: if <someoption> create Monitor(p.q)
-    if 'DB_URI' in conf:
-        m = Monitor(p.q, conf)
-        m.start()
-    p.link_exception(on_player_crash)
-
-    def sig(*args):
-        print('invoked sig', args)
-        p.q.put('signal', *args)
-    gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
-    gevent.wait()
-
-if __name__ == '__main__':
-    main()
