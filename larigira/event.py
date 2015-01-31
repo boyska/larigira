@@ -106,7 +106,12 @@ class Monitor(ParentedLet):
 
         audiogen = gevent.spawn_later(delta.total_seconds(), audiogenerate,
                                       audiospec)
-        self.running[timespec.eid] = audiogen
+        self.running[timespec.eid] = {
+            'greenlet': audiogen,
+            'running_time': datetime.now() + timedelta(
+                seconds=delta.total_seconds()),
+            'audiospec': audiospec
+        }
         gevent.spawn_later(delta.total_seconds(),
                            self.source.reload_id,
                            timespec.eid)

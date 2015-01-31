@@ -34,6 +34,20 @@ def rpc_refresh():
     return jsonify(dict(status='ok'))
 
 
+def get_scheduled_audiogen():
+    larigira = current_app.larigira
+    model = larigira.monitor.source.model
+    running = larigira.monitor.running
+    events = {t: {} for t in running.keys()}
+    for timespec_eid in events:
+        orig_info = running[timespec_eid]
+        info = events[timespec_eid]
+        info['running_time'] = orig_info['running_time'].isoformat()
+        info['audiospec'] = orig_info['audiospec']
+        info['timespec'] = model.get_alarm_by_id(timespec_eid)
+    return events
+
+
 @rpc.route('/debug/running')
 def rpc_wip():
     greenlets = []
@@ -44,7 +58,9 @@ def rpc_wip():
             'class': ob.__class__.__name__,
             'parent': repr(ob.parent)
         })
-    return jsonify(dict(greenlets=greenlets))
+    return jsonify(dict(greenlets=greenlets,
+                        audiogens=get_scheduled_audiogen(),
+                        ))
 
 
 def create_app(queue, larigira):
