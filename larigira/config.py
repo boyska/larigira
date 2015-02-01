@@ -16,6 +16,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['CACHING_TIME'] = 10
     conf['DB_URI'] = 'larigira.db'
     conf['BOOTSTRAP_SERVE_LOCAL'] = True
+    conf['SECRET_KEY'] = 'Please replace me!'
     conf.update(from_envvars(prefix=prefix))
     return conf
 

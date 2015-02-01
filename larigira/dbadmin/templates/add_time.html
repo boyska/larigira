@@ -1,0 +1,15 @@
+{% extends "dbadmin_base.html" %}
+{% block title %}Larigira - DB add time {%endblock%}
+
+{% block content %}
+<div class="container-fluid">
+	<h2>Add time specification</h2>
+	Available kinds:
+	<ul>
+		{% for kind in kinds %}
+		<li><a href="{{url_for('db.addtime_kind', kind=kind)}}">{{kind}}
+				{% endfor %}
+	</ul>
+</div>
+{% endblock content %}
+{# vim: set ts=2 sw=2 noet: #}

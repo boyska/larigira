@@ -11,3 +11,7 @@ def get_one_entrypoint(group, kind):
     if len(points) > 1:
         log.warning("Found more than one timeform for %s:%s" % (group, kind))
     return points[0].load()
+
+
+def get_avail_entrypoints(group):
+    return [e.name for e in iter_entry_points(group=group)]

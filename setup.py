@@ -41,6 +41,8 @@ setup(name='larigira',
           'flask',
           'flask-bootstrap',
           'python-mpd2',
+          'wtforms',
+          'Flask-WTF',
           'tinydb'
       ],
       tests_require=['pytest', 'pytest-timeout'],
@@ -59,6 +61,12 @@ setup(name='larigira',
           'larigira.timegenerators': [
               'frequency = larigira.timegen_every:FrequencyAlarm',
               'single = larigira.timegen_every:SingleAlarm',
-          ]
+          ],
+          'larigira.timeform_create': [
+              'single = larigira.timeform_single:SingleAlarmForm',
+          ],
+          'larigira.timeform_receive': [
+              'single = larigira.timeform_single:singlealarm_receive',
+          ],
       }
       )
