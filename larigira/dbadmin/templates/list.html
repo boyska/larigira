@@ -1,24 +1,28 @@
-<html>
-<meta>
-<title>Larigira - DB list</title>
-</meta>
-<body>
-	<div class="main">
-		{% for e, actions in events %}
-		<div class="event">
-			<h2>Event {{e.eid}}</h2>
-			<pre>{{ e }}</pre>
-			<div class="actions">
-				<h3>Actions</h3>
-				<ol>
-					{% for a in actions %}
-					<li><pre>{{ a }}</pre></li>
-					{% endfor %}
-				</ol>
-			</div>{# actions #}
-		</div>{# event #}
-		{% endfor %}
-	</div>{# main #}
-</body>
-</html>
+{% extends "dbadmin_base.html" %}
+{% block title %}Larigira - DB list {%endblock%}
+
+{% block content %}
+<div class="container-fluid">
+	{% for e, actions in events %}
+	<div class="event row">
+		<div class="col-md-8">
+			<h2>Event {{e.eid}} <small>{{e.nick if 'nick'}}</small></h2>
+			{{dict_table(e, ['nick', 'actions'])}}
+
+		</div>
+		<div class="actions col-md-4">
+			<h3>Actions</h3>
+			<ol>
+				{% for a in actions %}
+				<li>
+					<strong> {{a.nick}} </strong>
+					{{dict_table(a, ['nick'])}}
+				</li>
+				{% endfor %}
+			</ol>
+		</div>{# actions #}
+	</div>{# event #}
+	{% endfor %}
+</div>
+{% endblock content %}
 {# vim: set ts=2 sw=2 noet: #}

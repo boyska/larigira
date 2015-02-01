@@ -39,6 +39,7 @@ setup(name='larigira',
       install_requires=[
           'gevent',
           'flask',
+          'flask-bootstrap',
           'python-mpd2',
           'tinydb'
       ],

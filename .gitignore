@@ -9,3 +9,4 @@ larigira.db
 larigira.db_*
 *.json
 .coverage
+*.db

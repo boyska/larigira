@@ -1,3 +1,8 @@
+'''
+This module contains a flask blueprint for db administration stuff
+
+Templates are self-contained in this directory
+'''
 from __future__ import print_function
 
 from flask import current_app, Blueprint, render_template

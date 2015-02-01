@@ -15,6 +15,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['MPD_PORT'] = int(os.getenv('MPD_PORT', '6600'))
     conf['CACHING_TIME'] = 10
     conf['DB_URI'] = 'larigira.db'
+    conf['BOOTSTRAP_SERVE_LOCAL'] = True
     conf.update(from_envvars(prefix=prefix))
     return conf
 

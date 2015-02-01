@@ -4,8 +4,10 @@ import gc
 from greenlet import greenlet
 
 from flask import current_app, Blueprint, Flask, jsonify
+from flask_bootstrap import Bootstrap
 
 from .dbadmin import db
+from .config import get_conf
 
 rpc = Blueprint('rpc', __name__, url_prefix='/api')
 
@@ -67,7 +69,9 @@ def rpc_wip():
 
 
 def create_app(queue, larigira):
-    app = Flask(__name__)
+    app = Flask('larigira')
+    app.config.update(get_conf())
+    Bootstrap(app)
     app.register_blueprint(rpc)
     app.register_blueprint(db)
     app.queue = queue
