@@ -1,21 +1,15 @@
 from __future__ import print_function
 import sys
 import argparse
-from pkg_resources import iter_entry_points
+from entrypoints_utils import get_one_entrypoint
 import json
-import logging
+from logging import getLogger
+log = getLogger('audiogen')
 
 
 def get_audiogenerator(kind):
     '''Messes with entrypoints to return an audiogenerator function'''
-    points = tuple(iter_entry_points(group='larigira.audiogenerators',
-                                     name=kind))
-    if not points:
-        raise ValueError('cant find a generator for ', kind)
-    if len(points) > 1:
-        logging.warning("Found more than one audiogenerator for '%s'" % kind)
-    gen = points[0]
-    return gen.load()
+    return get_one_entrypoint('larigira.audiogenerators', kind)
 
 
 def get_parser():
@@ -49,7 +43,7 @@ def main():
     spec = read_spec(args.audiospec[0])
     errors = tuple(check_spec(spec))
     if errors:
-        logging.error("Errors in audiospec")
+        log.error("Errors in audiospec")
         for err in errors:
             print(err)  # TODO: to stderr
         sys.exit(1)

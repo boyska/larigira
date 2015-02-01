@@ -4,22 +4,16 @@ main module to read and get informations about alarms
 from __future__ import print_function
 import sys
 import argparse
-from pkg_resources import iter_entry_points
+from entrypoints_utils import get_one_entrypoint
 import json
-import logging
+from logging import getLogger
+log = getLogger('timegen')
 from datetime import datetime
 
 
 def get_timegenerator(kind):
     '''Messes with entrypoints to return an timegenerator function'''
-    points = tuple(iter_entry_points(group='larigira.timegenerators',
-                                     name=kind))
-    if not points:
-        raise ValueError('cant find a generator for ', kind)
-    if len(points) > 1:
-        logging.warning("Found more than one timegenerator for '%s'" % kind)
-    gen = points[0]
-    return gen.load()
+    return get_one_entrypoint('larigira.timegenerators', kind)
 
 
 def get_parser():
@@ -65,7 +59,7 @@ def main():
     spec = read_spec(args.timespec[0])
     errors = tuple(check_spec(spec))
     if errors:
-        logging.error("Errors in timespec")
+        log.error("Errors in timespec")
         for err in errors:
             print(err)  # TODO: to stderr
         sys.exit(1)
