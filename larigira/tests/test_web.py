@@ -5,11 +5,12 @@ monkey.patch_all(subprocess=True)
 import pytest
 
 from larigira.rpc import create_app
+from larigira.larigira import Larigira
 
 
 @pytest.fixture
 def app(queue):
-    return create_app(queue)
+    return create_app(queue, Larigira())
 
 
 def test_refresh(app):
