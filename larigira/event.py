@@ -44,9 +44,15 @@ class EventModel(object):
                 yield alarm, action
 
     def add_event(self, alarm, actions):
-        action_ids = [self.actions.insert(a) for a in actions]
+        action_ids = [self.add_action(a) for a in actions]
         alarm['actions'] = action_ids
         return self.alarms.insert(alarm)
+
+    def add_action(self, action):
+        return self.actions.insert(action)
+
+    def add_alarm(self, alarm):
+        return self.add_event(alarm, [])
 
 
 class EventSource(ParentedLet):

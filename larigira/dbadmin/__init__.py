@@ -12,6 +12,11 @@ from larigira import forms
 db = Blueprint('db', __name__, url_prefix='/db', template_folder='templates')
 
 
+@db.route('/')
+def home():
+    return render_template('dbadmin_base.html')
+
+
 @db.route('/list')
 def list():
     model = current_app.larigira.monitor.source.model
@@ -42,5 +47,30 @@ def addtime_kind_post(kind):
         abort(400)
     data = receiver(form)
     model = current_app.larigira.monitor.source.model
-    eid = model.add_event(data, [])
+    eid = model.add_alarm(data, [])
+    return jsonify(dict(inserted=eid, data=data))
+
+
+@db.route('/add/audio')
+def addaudio():
+    kinds = get_avail_entrypoints('larigira.audioform_create')
+    return render_template('add_audio.html', kinds=kinds)
+
+
+@db.route('/add/audio/<kind>')
+def addaudio_kind(kind):
+    Form = next(forms.get_audioform(kind))
+    return render_template('add_audio_kind.html', form=Form(), kind=kind)
+
+
+@db.route('/add/audio/<kind>', methods=['POST'])
+def addaudio_kind_post(kind):
+    Form, receiver = tuple(forms.get_audioform(kind))
+    form = Form()
+    del Form
+    if not form.validate_on_submit():
+        abort(400)
+    data = receiver(form)
+    model = current_app.larigira.monitor.source.model
+    eid = model.add_action(data)
     return jsonify(dict(inserted=eid, data=data))

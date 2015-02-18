@@ -68,5 +68,11 @@ setup(name='larigira',
           'larigira.timeform_receive': [
               'single = larigira.timeform_single:singlealarm_receive',
           ],
+          'larigira.audioform_create': [
+              'static = larigira.audioform_static:StaticAudioForm',
+          ],
+          'larigira.audioform_receive': [
+              'static = larigira.audioform_static:staticaudio_receive',
+          ],
       }
       )
