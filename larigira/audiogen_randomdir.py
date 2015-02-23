@@ -46,4 +46,4 @@ def generate(spec):
                       prefix='audiogen-randomdir-')
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
-        yield tmp[1]
+        yield 'file://' + tmp[1]
