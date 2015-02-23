@@ -14,6 +14,7 @@ class StaticAudioForm(Form):
 
 def staticaudio_receive(form):
     return {
+        'kind': 'static',
         'nick': form.nick.data,
         'paths': [form.path.data]
     }
