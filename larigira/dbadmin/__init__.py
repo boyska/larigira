@@ -47,7 +47,7 @@ def addtime_kind_post(kind):
         abort(400)
     data = receiver(form)
     model = current_app.larigira.monitor.source.model
-    eid = model.add_alarm(data, [])
+    eid = model.add_alarm(data)
     return jsonify(dict(inserted=eid, data=data))
 
 
