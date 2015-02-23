@@ -1,0 +1,82 @@
+{% extends "dbadmin_base.html" %}
+{%block styles %}
+{{super()}}
+<link href="https://code.jquery.com/ui/1.11.3/themes/ui-lightness/jquery-ui.css"
+			rel="stylesheet" media="screen">
+<style>
+#selected { 
+	margin: 5px;
+	padding: 5px;
+	border: 2px dashed #999;
+}
+</style>
+{%endblock styles%}
+{%block scripts %}
+{{super()}}
+<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"
+				type="text/javascript">
+</script>
+<script type="text/javascript">
+var my_id = {{alarm.eid}};
+$(function() {
+	$('.avail').draggable({
+		connectToSortable: '#selected',
+		helper: 'clone',
+	}).droppable({
+		drop: function(evt, ui) { 
+			$(ui.draggable).remove();
+		},
+	});
+	$('#selected').sortable({
+	})
+	$('ul, li').disableSelection();
+	$('button').button().click(function(evt) {
+		var ids = $('#selected li').map(function(i, li) {
+			return $(li).data('id');
+		});
+		jQuery.post(
+			'/db/api/alarm/' + my_id + '/actions',
+			{"actions[]": ids.toArray()}
+			);
+	});
+});
+</script>
+{%endblock scripts %}
+{% block title %}Larigira - edit event {%endblock%}
+
+{% block content %}
+<div class="container-fluid">
+	{% if alarm: %}
+	You are currently editing: <code>{{alarm}}</code>
+	{% endif %}
+	<h2>Change actions</h2>
+	<div>
+		Available actions:
+		<ul>
+			{% for a in all_actions %}
+			<li title="{{a.kind}}"
+			 data-nick="{{a.nick}}"
+		data-id="{{a.eid}}"
+	class="avail ui-state-highlight">{% if a.nick %} {{a.nick}} {% else %} {{a.eid}} {%endif%}</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div>
+		Actions currently added:
+		<ul id="selected">
+			{% for a in actions %}
+			<li title="{{a.kind}}"
+			 data-nick="{{a.nick}}"
+		data-id="{{a.eid}}"
+				class="ui-state-default">{% if a.nick %} {{a.nick}} {% else %} {{a.eid}} {%endif%}</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div>
+		<button>Save</button>
+	</div>
+</div>
+{% endblock content %}
+{# vim: set ts=2 sw=2 noet: #}
+
+

@@ -5,7 +5,7 @@ Templates are self-contained in this directory
 '''
 from __future__ import print_function
 
-from flask import current_app, Blueprint, render_template, jsonify, abort
+from flask import current_app, Blueprint, render_template, jsonify, abort, request
 
 from larigira.entrypoints_utils import get_avail_entrypoints
 from larigira import forms
@@ -74,3 +74,28 @@ def addaudio_kind_post(kind):
     model = current_app.larigira.monitor.source.model
     eid = model.add_action(data)
     return jsonify(dict(inserted=eid, data=data))
+
+
+@db.route('/edit/event/<alarmid>')
+def edit_event(alarmid):
+    model = current_app.larigira.monitor.source.model
+    alarm = model.get_alarm_by_id(int(alarmid))
+    if alarm is None:
+        abort(404)
+    allactions = model.get_all_actions()
+    print('all', allactions)
+    actions = tuple(model.get_actions_by_alarm(alarm))
+    return render_template('edit_event.html',
+                           alarm=alarm, all_actions=allactions,
+                           actions=actions)
+
+
+@db.route('/api/alarm/<alarmid>/actions', methods=['POST'])
+def change_actions(alarmid):
+    new_actions = request.form.getlist('actions[]')
+    if new_actions is None:
+        new_actions = []
+    model = current_app.larigira.monitor.source.model
+    ret = model.update_alarm(int(alarmid),
+                             new_fields={'actions': map(int, new_actions)})
+    return jsonify(dict(updated=alarmid, ret=ret))

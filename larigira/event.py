@@ -38,6 +38,9 @@ class EventModel(object):
     def get_all_alarms(self):
         return self.alarms.all()
 
+    def get_all_actions(self):
+        return self.actions.all()
+
     def get_all_alarms_expanded(self):
         for alarm in self.get_all_alarms():
             for action in self.get_actions_by_alarm(alarm):
@@ -53,6 +56,9 @@ class EventModel(object):
 
     def add_alarm(self, alarm):
         return self.add_event(alarm, [])
+
+    def update_alarm(self, alarmid, new_fields={}):
+        return self.alarms.update(new_fields, eids=[alarmid])
 
 
 class EventSource(ParentedLet):
