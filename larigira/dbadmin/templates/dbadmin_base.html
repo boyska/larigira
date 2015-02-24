@@ -1,4 +1,20 @@
 {% extends "bootstrap/base.html" %}
+{%block styles%}
+{{super()}}
+<link href="https://code.jquery.com/ui/1.11.3/themes/ui-lightness/jquery-ui.css"
+			rel="stylesheet" media="screen">
+{%endblock%}
+{%block scripts%}
+{{super()}}
+<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"
+				type="text/javascript">
+</script>
+<script type="text/javascript">
+$(function() {
+	$('.button').button({});
+});
+</script>
+{%endblock%}
 {% block title %}Larigira{% endblock title %}
 {% block navbar %}
 <nav class="navbar navbar-default">
