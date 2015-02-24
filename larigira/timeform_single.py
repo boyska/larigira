@@ -17,5 +17,5 @@ def singlealarm_receive(form):
     return {
         'kind': 'single',
         'nick': form.nick.data,
-        'timestamp': form.dt.data.strftime('%s')
+        'timestamp': int(form.dt.data.strftime('%s'))
     }

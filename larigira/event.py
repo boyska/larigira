@@ -112,6 +112,9 @@ class Monitor(ParentedLet):
         except:
             logging.exception("Could not generate "
                               "an alarm from timespec {}".format(timespec))
+        if when is None:
+            # expired
+            return
         delta = when - now
         assert delta.total_seconds() > 0
         self.log.info('Will run after %d seconds' % delta.total_seconds())
