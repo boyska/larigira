@@ -4,13 +4,16 @@ import random
 
 from mpd import MPDClient
 
+from config import get_conf
+
 
 def generate_by_artist(spec):
     '''choose HOWMANY random artists, and for each one choose a random song'''
     spec.setdefault('howmany', 1)
     log.info('generating')
+    conf = get_conf()
     c = MPDClient()
-    c.connect('localhost', 6600)  # TODO: read global options somehow
+    c.connect(conf['MPD_HOST'], conf['MPD_PORT'])  # TODO: read global options somehow
 
     artists = c.list('artist')
     log.debug("got %d artists" % len(artists))
