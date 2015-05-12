@@ -49,7 +49,9 @@ class Player(gevent.Greenlet):
     def check_playlist(self):
         mpd_client = self._get_mpd()
         songs = mpd_client.playlist()
-        if(len(songs) >= self.min_playlist_length):
+        current = mpd_client.currentsong()
+        pos = int(current.get('pos', 0)) + 1
+        if(len(songs) - pos >= self.min_playlist_length):
             return
         self.log.info('need to add new songs')
         picker = gevent.Greenlet(audiogenerate,
@@ -73,7 +75,7 @@ class Player(gevent.Greenlet):
             # emitter = value['emitter']
             kind = value['kind']
             args = value['args']
-            if kind == 'timer' or (kind == 'mpc' and args[0] == 'playlist'):
+            if kind == 'timer' or (kind == 'mpc' and args[0] in ('player', 'playlist')):
                 gevent.Greenlet.spawn(self.check_playlist)
             elif kind == 'mpc':
                 pass
