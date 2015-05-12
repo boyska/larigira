@@ -7,6 +7,7 @@ monkey.patch_all(subprocess=True)
 
 import sys
 import signal
+from time import sleep
 import logging
 FORMAT = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
 logging.basicConfig(level=logging.INFO,
@@ -16,7 +17,7 @@ logging.basicConfig(level=logging.INFO,
 import gevent
 from gevent.wsgi import WSGIServer
 
-from .mpc import Player
+from .mpc import Player, get_mpd_client
 from .event import Monitor
 from .config import get_conf
 from .rpc import create_app
@@ -49,6 +50,19 @@ class Larigira(object):
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
+    if(get_conf()['MPD_WAIT_START']):
+        while True:
+            try:
+                get_mpd_client(get_conf())
+            except Exception:
+                logging.debug("Could not connect to MPD, waiting")
+                sleep(int(get_conf()['MPD_WAIT_START_RETRYSECS']))
+            else:
+                logging.info("MPD ready!")
+                break
+
+
+
     larigira = Larigira()
     larigira.start()
 

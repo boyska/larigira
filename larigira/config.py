@@ -17,6 +17,8 @@ def get_conf(prefix='LARIGIRA_'):
     conf['DB_URI'] = 'larigira.db'
     conf['BOOTSTRAP_SERVE_LOCAL'] = True
     conf['SECRET_KEY'] = 'Please replace me!'
+    conf['MPD_WAIT_START'] = True
+    conf['MPD_WAIT_START_RETRYSECS'] = 5
     conf.update(from_envvars(prefix=prefix))
     return conf
 

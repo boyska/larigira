@@ -9,15 +9,20 @@ from eventutils import ParentedLet, Timer
 from audiogen import audiogenerate
 
 
+def get_mpd_client(conf):
+    client = MPDClient()
+    client.connect(conf['MPD_HOST'], conf['MPD_PORT'])
+
+    return client
+
+
 class MpcWatcher(ParentedLet):
     def __init__(self, queue, conf, client=None):
         ParentedLet.__init__(self, queue)
         self.log = logging.getLogger(self.__class__.__name__)
         self.conf = conf
         if client is None:
-            self.client = MPDClient()
-            # TODO: use config values
-            self.client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
+            self.client = get_mpd_client(self.conf)
         else:
             self.client = client  # assume it is already connected
 
