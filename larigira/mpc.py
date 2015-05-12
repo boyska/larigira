@@ -68,7 +68,9 @@ class Player(gevent.Greenlet):
 
     def _run(self):
         MpcWatcher(self.q, self.conf, client=None).start()
-        Timer(60 * 1000, self.q).start()
+        Timer(int(self.conf['CHECK_SECS']) * 1000, self.q).start()
+        # at the very start, run a check!
+        gevent.Greenlet.spawn(self.check_playlist)
         while True:
             value = self.q.get()
             self.log.debug('<- %s' % str(value))
