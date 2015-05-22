@@ -11,9 +11,7 @@ from xdg import BaseDirectory
 
 def get_conf(prefix='LARIGIRA_'):
     '''This is where everyone should get configuration from'''
-    conf_dir = os.path.join(BaseDirectory.xdg_config_home, 'larigira')
-    if not os.path.exists(conf_dir):
-        os.mkdir(conf_dir)
+    conf_dir = BaseDirectory.save_config_path('larigira')
     conf = {}
     conf['CONTINOUS_AUDIODESC'] = dict(kind='mpd', howmany=1)
     conf['MPD_HOST'] = os.getenv('MPD_HOST', 'localhost')
