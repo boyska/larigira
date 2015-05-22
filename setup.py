@@ -37,6 +37,7 @@ setup(name='larigira',
       license='AGPL',
       packages=['larigira', 'larigira.dbadmin'],
       install_requires=[
+          'pyxdg',
           'gevent',
           'flask',
           'flask-bootstrap',

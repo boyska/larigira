@@ -6,15 +6,20 @@ Taken from flask-appconfig
 import json
 import os
 
+from xdg import BaseDirectory
+
 
 def get_conf(prefix='LARIGIRA_'):
     '''This is where everyone should get configuration from'''
+    conf_dir = os.path.join(BaseDirectory.xdg_config_home, 'larigira')
+    if not os.path.exists(conf_dir):
+        os.mkdir(conf_dir)
     conf = {}
     conf['CONTINOUS_AUDIODESC'] = dict(kind='mpd', howmany=1)
     conf['MPD_HOST'] = os.getenv('MPD_HOST', 'localhost')
     conf['MPD_PORT'] = int(os.getenv('MPD_PORT', '6600'))
     conf['CACHING_TIME'] = 10
-    conf['DB_URI'] = 'larigira.db'
+    conf['DB_URI'] = os.path.join(conf_dir, 'db.json')
     conf['BOOTSTRAP_SERVE_LOCAL'] = True
     conf['SECRET_KEY'] = 'Please replace me!'
     conf['MPD_WAIT_START'] = True
