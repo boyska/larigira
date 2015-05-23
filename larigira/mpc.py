@@ -63,8 +63,9 @@ class Player(gevent.Greenlet):
         mpd_client = self._get_mpd()
         for song in songs:
             self.log.info('Adding {} to playlist'.format(song))
-            pos = min(1, len(mpd_client.playlistid()))
-            mpd_client.addid(song, pos)
+            insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
+                int(mpd_client.currentsong().get('pos', 0))
+            mpd_client.addid(song, insert_pos)
 
     def _run(self):
         MpcWatcher(self.q, self.conf, client=None).start()
