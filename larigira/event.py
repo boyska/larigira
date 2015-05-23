@@ -117,7 +117,11 @@ class Monitor(ParentedLet):
             return
         delta = when - now
         assert delta.total_seconds() > 0
-        self.log.info('Will run after %d seconds' % delta.total_seconds())
+        self.log.info('Timer<{}> will run after {} seconds, triggering <{}>'.format(
+            timespec.get('nick', timespec.eid),
+            int(delta.total_seconds()),
+            audiospec.get('nick', audiospec.eid)
+        ))
 
         audiogen = gevent.spawn_later(delta.total_seconds(), audiogenerate,
                                       audiospec)
