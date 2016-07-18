@@ -44,6 +44,7 @@ def addtime_kind_post(kind):
     form = Form()
     del Form
     if not form.validate_on_submit():
+        current_app.logger.error('Validation errors: {}'.format(form.errors))
         abort(400)
     data = receiver(form)
     model = current_app.larigira.monitor.source.model
