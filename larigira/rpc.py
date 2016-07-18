@@ -1,8 +1,9 @@
 from __future__ import print_function
 import logging
 import gc
-from greenlet import greenlet
+from copy import deepcopy
 
+from greenlet import greenlet
 from flask import current_app, Blueprint, Flask, jsonify
 from flask_bootstrap import Bootstrap
 
@@ -55,7 +56,28 @@ def get_scheduled_audiogen():
 
 @rpc.route('/debug/running')
 def rpc_wip():
-    greenlets = []
+    def treeify(flat):
+        roots = [obid for obid in flat if flat[obid]['parent'] not in flat]
+        tree = deepcopy(flat)
+        for obid in tree:
+            tree[obid]['children'] = {}
+
+        to_remove = []
+        for obid in tree:
+            if obid in roots:
+                continue
+            if obid not in tree:
+                current_app.logger.warn('How strange, {} not in tree'
+                                        .format(obid))
+                continue
+            tree[tree[obid]['parent']]['children'][obid] = tree[obid]
+            to_remove.append(obid)
+
+        for obid in to_remove:
+            del tree[obid]
+        return tree
+
+    greenlets = {}
     for ob in filter(lambda obj: isinstance(obj, greenlet),
                      gc.get_objects()):
         objrepr = {
@@ -76,6 +98,7 @@ def rpc_wip():
     # TODO: make it a tree
 
     return jsonify(dict(greenlets=greenlets,
+                        greenlets_tree=treeify(greenlets),
                         audiogens=get_scheduled_audiogen(),
                         ))
 
