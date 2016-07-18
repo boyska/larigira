@@ -3,7 +3,7 @@ import logging
 
 import gevent
 from gevent.queue import Queue
-from mpd import MPDClient
+from mpd import MPDClient, ConnectionError
 
 from eventutils import ParentedLet, Timer
 from audiogen import audiogenerate
@@ -21,14 +21,23 @@ class MpcWatcher(ParentedLet):
         ParentedLet.__init__(self, queue)
         self.log = logging.getLogger(self.__class__.__name__)
         self.conf = conf
-        if client is None:
-            self.client = get_mpd_client(self.conf)
-        else:
-            self.client = client  # assume it is already connected
+        self.client = client  # assume it is already connected, or None
+
+    def refresh_client(self):
+        self.client = get_mpd_client(self.conf)
 
     def do_business(self):
         while True:
-            status = self.client.idle()[0]
+            try:
+                if self.client is None:
+                    self.refresh_client()
+
+                self.log.info('idling')
+                status = self.client.idle()[0]
+            except ConnectionError:
+                # TODO: should we emit an error just in case?
+                self.client = None
+                continue
             self.log.info(status)
             yield ('mpc', status)
 
