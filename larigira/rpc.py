@@ -58,11 +58,23 @@ def rpc_wip():
     greenlets = []
     for ob in filter(lambda obj: isinstance(obj, greenlet),
                      gc.get_objects()):
-        greenlets.append({
+        objrepr = {
             'repr': repr(ob),
             'class': ob.__class__.__name__,
-            'parent': repr(ob.parent)
-        })
+        }
+        if hasattr(ob, 'parent_greenlet') and ob.parent_greenlet is not None:
+            objrepr['parent'] = hex(id(ob.parent_greenlet))
+        else:
+            objrepr['parent'] = hex(id(ob.parent)) if ob.parent is not None else None
+        if hasattr(ob, 'doc'):
+            objrepr['doc'] = ob.doc.split('\n')[0]
+        elif ob.__doc__:
+            objrepr['doc'] = ob.__doc__.split('\n')[0]
+
+        greenlets[hex(id(ob))] = objrepr
+
+    # TODO: make it a tree
+
     return jsonify(dict(greenlets=greenlets,
                         audiogens=get_scheduled_audiogen(),
                         ))

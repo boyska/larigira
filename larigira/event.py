@@ -93,6 +93,7 @@ class EventSource(ParentedLet):
 
 
 class Monitor(ParentedLet):
+    '''Manages timegenerators and audiogenerators'''
     def __init__(self, parent_queue, conf):
         ParentedLet.__init__(self, parent_queue)
         self.log = logging.getLogger(self.__class__.__name__)
@@ -100,6 +101,7 @@ class Monitor(ParentedLet):
         self.running = {}
         self.conf = conf
         self.source = EventSource(self.q, uri=conf['DB_URI'])
+        self.source.parent_greenlet = self
 
     def add(self, timespec, audiospec):
         '''
@@ -125,15 +127,21 @@ class Monitor(ParentedLet):
 
         audiogen = gevent.spawn_later(delta.total_seconds(), audiogenerate,
                                       audiospec)
+        audiogen.parent_greenlet = self
+        audiogen.doc = 'Will wait {} seconds, then generate audio "{}"'.format(
+            delta.total_seconds(),
+            audiospec.get('nick', ''))
         self.running[timespec.eid] = {
             'greenlet': audiogen,
             'running_time': datetime.now() + timedelta(
                 seconds=delta.total_seconds()),
             'audiospec': audiospec
         }
-        gevent.spawn_later(delta.total_seconds(),
-                           self.source.reload_id,
-                           timespec.eid)
+        gl = gevent.spawn_later(delta.total_seconds(),
+                                self.source.reload_id,
+                                timespec.eid)
+        gl.parent_greenlet = self
+        gl.doc = 'Will wait, then reload id {}'.format(timespec.eid)
         # FIXME: audiogen is ready in a moment between
         # exact_time - CACHING_TIME and the exact_time
         # atm we are just ignoring this "window", saying that any moment is

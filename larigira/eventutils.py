@@ -12,6 +12,7 @@ class ParentedLet(gevent.Greenlet):
     def __init__(self, queue):
         gevent.Greenlet.__init__(self)
         self.parent_queue = queue
+        self.parent_greenlet = None
         self.tracker = None  # set this to recognize easily
 
     def parent_msg(self, kind, *args):
@@ -54,6 +55,7 @@ class CeleryTask(ParentedLet):
 
 
 class Timer(ParentedLet):
+    '''wait some time, then send a "timer" message to parent'''
     def __init__(self, milliseconds, queue):
         ParentedLet.__init__(self, queue)
         self.ms = milliseconds
