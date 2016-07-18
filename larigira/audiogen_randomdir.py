@@ -22,7 +22,7 @@ def generate(spec):
 
     Recognized arguments:
         - paths [mandatory]    list of source paths
-        - howmany [mandatory]  number of audio files to pick
+        - howmany [default=1]  number of audio files to pick
     '''
     spec.setdefault('howmany', 1)
     for attr in ('paths', ):

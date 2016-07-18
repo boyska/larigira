@@ -13,7 +13,7 @@ def generate_by_artist(spec):
     log.info('generating')
     conf = get_conf()
     c = MPDClient()
-    c.connect(conf['MPD_HOST'], conf['MPD_PORT'])  # TODO: read global options somehow
+    c.connect(conf['MPD_HOST'], conf['MPD_PORT'])
 
     artists = c.list('artist')
     log.debug("got %d artists" % len(artists))
