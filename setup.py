@@ -58,7 +58,8 @@ setup(name='larigira',
           'larigira.audiogenerators': [
               'mpd = larigira.audiogen_mpdrandom:generate_by_artist',
               'static = larigira.audiogen_static:generate',
-              'randomdir = larigira.audiogen_randomdir:generate'
+              'randomdir = larigira.audiogen_randomdir:generate',
+              'script = larigira.audiogen_script:generate',
           ],
           'larigira.timegenerators': [
               'frequency = larigira.timegen_every:FrequencyAlarm',
@@ -72,9 +73,11 @@ setup(name='larigira',
           ],
           'larigira.audioform_create': [
               'static = larigira.audioform_static:StaticAudioForm',
+              'script = larigira.audioform_script:ScriptAudioForm',
           ],
           'larigira.audioform_receive': [
               'static = larigira.audioform_static:staticaudio_receive',
+              'script = larigira.audioform_script:scriptaudio_receive',
           ],
       }
       )

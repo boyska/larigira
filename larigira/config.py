@@ -18,6 +18,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['MPD_PORT'] = int(os.getenv('MPD_PORT', '6600'))
     conf['CACHING_TIME'] = 10
     conf['DB_URI'] = os.path.join(conf_dir, 'db.json')
+    conf['SCRIPTS_PATH'] = os.path.join(conf_dir, 'scripts')
     conf['BOOTSTRAP_SERVE_LOCAL'] = True
     conf['SECRET_KEY'] = 'Please replace me!'
     conf['MPD_WAIT_START'] = True
