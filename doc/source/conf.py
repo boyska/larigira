@@ -15,6 +15,7 @@
 
 import sys
 import os
+import subprocess
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -49,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'larigira'
-copyright = '2015, boyska'
+copyright = '2015-2016, boyska'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -261,3 +262,28 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+def run_apidoc(_):
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    proj_dir = os.path.abspath(os.path.join(cur_dir, '..', '..'))
+    modules = ['larigira']
+    exclude_files = [os.path.abspath(os.path.join(proj_dir, excl))
+                     for excl in ('larigira/rpc.py', 'larigira/dbadmin/')]
+    for module in modules:
+        output_path = os.path.join(cur_dir, 'api')
+        cmd_path = 'sphinx-apidoc'
+        if hasattr(sys, 'real_prefix'):  # Are we in a virtualenv?
+            # assemble the path manually
+            cmd_path = os.path.abspath(os.path.join(sys.prefix,
+                                                    'bin',
+                                                    'sphinx-apidoc'))
+        subprocess.check_call([cmd_path,
+                               '--force',
+                               '-o', output_path,
+                               module
+                               ] + exclude_files)
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)

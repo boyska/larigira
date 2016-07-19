@@ -10,3 +10,4 @@ larigira.db_*
 *.json
 .coverage
 *.db
+doc/source/api/larigira.rst
