@@ -1,3 +1,19 @@
+'''
+script audiogenerator: uses an external program to generate audio URIs
+
+a script can be any valid executable in
+$XDG_CONFIG_DIR/larigira/scripts/<name>; for security reasons, it must be
+executable and owned by the current user. The audiospec can specify arguments
+to the script, while the environment cannot be customized (again, this is for
+security reasons).
+
+The script should assume a minimal environment, and being run from /.  It must
+output one URI per line; please remember that URI must be understood from mpd,
+so file paths are not valid; file:///file/path.ogg is a valid URI instead.
+Empty lines will be skipped.  stderr will be logged, so please be careful.  any
+non-zero exit code will result in no files being added.and an exception being
+logged.
+'''
 import logging
 import os
 import subprocess

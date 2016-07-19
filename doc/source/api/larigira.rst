@@ -35,6 +35,14 @@ larigira.audiogen_randomdir module
     :undoc-members:
     :show-inheritance:
 
+larigira.audiogen_script module
+-------------------------------
+
+.. automodule:: larigira.audiogen_script
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 larigira.audiogen_static module
 -------------------------------
 
