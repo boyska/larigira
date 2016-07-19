@@ -35,25 +35,6 @@ class ParentedLet(gevent.Greenlet):
             self.send_to_parent(*msg)
 
 
-class CeleryTask(ParentedLet):
-    def __init__(self, task, queue, task_args=tuple(), **kwargs):
-        ParentedLet.__init__(self, queue)
-        self.task = task
-        self.task_args = task_args
-        self.apply_async_args = kwargs
-
-    def parent_msg(self, kind, *args):
-        msg = ParentedLet.parent_msg(self, kind, *args)
-        msg['task'] = self.task
-        return msg
-
-    def do_business(self):
-        asyncres = self.task.apply_async(self.task_args,
-                                         **self.apply_async_args)
-        val = asyncres.get()
-        yield ('celery', val)
-
-
 class Timer(ParentedLet):
     '''wait some time, then send a "timer" message to parent'''
     def __init__(self, milliseconds, queue):
