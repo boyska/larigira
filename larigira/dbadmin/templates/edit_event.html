@@ -43,7 +43,7 @@ $(function() {
 {% block content %}
 <div class="container-fluid">
 	{% if alarm: %}
-	You are currently editing: <code>{{alarm}}</code>
+	You are currently editing: <code>{{alarm|tojson}}</code>
 	{% endif %}
 	<h2>Change actions</h2>
 	<div>
