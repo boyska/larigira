@@ -51,6 +51,7 @@ def get_scheduled_audiogen():
         info['running_time'] = orig_info['running_time'].isoformat()
         info['audiospec'] = orig_info['audiospec']
         info['timespec'] = model.get_alarm_by_id(timespec_eid)
+        info['greenlet'] = hex(id(orig_info['greenlet']))
     return events
 
 
@@ -87,7 +88,8 @@ def rpc_wip():
         if hasattr(ob, 'parent_greenlet') and ob.parent_greenlet is not None:
             objrepr['parent'] = hex(id(ob.parent_greenlet))
         else:
-            objrepr['parent'] = hex(id(ob.parent)) if ob.parent is not None else None
+            objrepr['parent'] = hex(id(ob.parent)) \
+                    if ob.parent is not None else None
         if hasattr(ob, 'doc'):
             objrepr['doc'] = ob.doc.split('\n')[0]
         elif ob.__doc__:
