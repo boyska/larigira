@@ -1,6 +1,6 @@
 from __future__ import print_function
 import argparse
-from pprint import pprint
+import json
 
 from .event import EventModel
 from .config import get_conf
@@ -9,7 +9,7 @@ from .config import get_conf
 def main_list(args):
     m = EventModel(args.file)
     for alarm, action in m.get_all_alarms_expanded():
-        pprint(dict(alarm=alarm, action=action), indent=4)
+        print(json.dumps(dict(alarm=alarm, action=action), indent=4))
 
 
 def main_add(args):
