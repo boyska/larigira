@@ -31,10 +31,14 @@ def get_parser():
 
 
 def read_spec(fname):
-    if fname == '-':
-        return json.load(sys.stdin)
-    with open(fname) as buf:
-        return json.load(buf)
+    try:
+        if fname == '-':
+            return json.load(sys.stdin)
+        with open(fname) as buf:
+            return json.load(buf)
+    except ValueError:
+        sys.stderr.write("Error: invalid JSON\n")
+        sys.exit(1)
 
 
 def check_spec(spec):
@@ -61,7 +65,7 @@ def main():
     if errors:
         log.error("Errors in timespec")
         for err in errors:
-            print(err)  # TODO: to stderr
+            sys.stderr.write('Error: {}\n'.format(err))
         sys.exit(1)
     now = None if args.now is None else args.now.pop()
     howmany = None if args.howmany is None else args.howmany.pop()
