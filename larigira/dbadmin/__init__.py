@@ -5,7 +5,8 @@ Templates are self-contained in this directory
 '''
 from __future__ import print_function
 
-from flask import current_app, Blueprint, render_template, jsonify, abort, request
+from flask import current_app, Blueprint, render_template, jsonify, abort, \
+    request
 
 from larigira.entrypoints_utils import get_avail_entrypoints
 from larigira import forms
@@ -32,24 +33,17 @@ def addtime():
     return render_template('add_time.html', kinds=kinds)
 
 
-@db.route('/add/time/<kind>')
+@db.route('/add/time/<kind>', methods=['GET', 'POST'])
 def addtime_kind(kind):
-    Form = next(forms.get_timeform(kind))
-    return render_template('add_time_kind.html', form=Form(), kind=kind)
-
-
-@db.route('/add/time/<kind>', methods=['POST'])
-def addtime_kind_post(kind):
     Form, receiver = tuple(forms.get_timeform(kind))
     form = Form()
-    del Form
-    if not form.validate_on_submit():
-        current_app.logger.error('Validation errors: {}'.format(form.errors))
-        abort(400)
-    data = receiver(form)
-    model = current_app.larigira.monitor.source.model
-    eid = model.add_alarm(data)
-    return jsonify(dict(inserted=eid, data=data))
+    if request.method == 'POST' and form.validate():
+        data = receiver(form)
+        model = current_app.larigira.monitor.source.model
+        eid = model.add_alarm(data)
+        return jsonify(dict(inserted=eid, data=data))
+
+    return render_template('add_time_kind.html', form=form, kind=kind)
 
 
 @db.route('/add/audio')
@@ -58,23 +52,17 @@ def addaudio():
     return render_template('add_audio.html', kinds=kinds)
 
 
-@db.route('/add/audio/<kind>')
+@db.route('/add/audio/<kind>', methods=['GET', 'POST'])
 def addaudio_kind(kind):
-    Form = next(forms.get_audioform(kind))
-    return render_template('add_audio_kind.html', form=Form(), kind=kind)
-
-
-@db.route('/add/audio/<kind>', methods=['POST'])
-def addaudio_kind_post(kind):
     Form, receiver = tuple(forms.get_audioform(kind))
     form = Form()
-    del Form
-    if not form.validate_on_submit():
-        abort(400)
-    data = receiver(form)
-    model = current_app.larigira.monitor.source.model
-    eid = model.add_action(data)
-    return jsonify(dict(inserted=eid, data=data))
+    if request.method == 'POST' and form.validate():
+        data = receiver(form)
+        model = current_app.larigira.monitor.source.model
+        eid = model.add_action(data)
+        return jsonify(dict(inserted=eid, data=data))
+
+    return render_template('add_audio_kind.html', form=form, kind=kind)
 
 
 @db.route('/edit/event/<alarmid>')
