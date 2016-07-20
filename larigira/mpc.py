@@ -73,7 +73,7 @@ class Player(gevent.Greenlet):
         for song in songs:
             self.log.info('Adding {} to playlist'.format(song))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
-                int(mpd_client.currentsong().get('pos', 0))
+                int(mpd_client.currentsong().get('pos', 0)) + 1
             try:
                 mpd_client.addid(song, insert_pos)
             except CommandError:
