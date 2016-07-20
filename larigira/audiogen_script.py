@@ -35,6 +35,9 @@ def generate(spec):
         if attr not in spec:
             raise ValueError("Malformed audiospec: missing '%s'" % attr)
 
+    if '/' in spec['name']:
+        raise ValueError("Script name is a filename, not a path ({} provided)"
+                         .format(spec['name']))
     scriptpath = os.path.join(conf['SCRIPTS_PATH'], spec['name'])
     if not os.path.exists(scriptpath):
         raise ValueError("Script %s not found", spec['name'])

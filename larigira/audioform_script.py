@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, validators, SubmitField
+from wtforms import StringField, validators, SubmitField, ValidationError
 
 
 class ScriptAudioForm(Form):
@@ -10,6 +10,11 @@ class ScriptAudioForm(Form):
     args = StringField(u'Arguments',
                        description='arguments, separated by spaces')
     submit = SubmitField(u'Submit')
+
+    def validate_name(form, field):
+        if '/' in field.data:
+            raise ValidationError("Name cannot have slashes: "
+                                  "it's a name, not a path")
 
 
 def scriptaudio_receive(form):
