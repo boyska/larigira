@@ -3,7 +3,7 @@ import logging
 
 import gevent
 from gevent.queue import Queue
-from mpd import MPDClient, ConnectionError
+from mpd import MPDClient, ConnectionError, CommandError
 
 from eventutils import ParentedLet, Timer
 from audiogen import audiogenerate
@@ -74,7 +74,10 @@ class Player(gevent.Greenlet):
             self.log.info('Adding {} to playlist'.format(song))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
                 int(mpd_client.currentsong().get('pos', 0))
-            mpd_client.addid(song, insert_pos)
+            try:
+                mpd_client.addid(song, insert_pos)
+            except CommandError:
+                self.log.exception("Cannot insert song {}".format(song))
 
     def _run(self):
         mw = MpcWatcher(self.q, self.conf, client=None)
