@@ -6,6 +6,8 @@ from gevent import monkey
 monkey.patch_all(subprocess=True)
 
 import sys
+import os
+import tempfile
 import signal
 from time import sleep
 import logging
@@ -49,6 +51,7 @@ class Larigira(object):
 
 
 def main():
+    os.environ['TMPDIR'] = tempfile.mkdtemp(prefix='larigira')
     logging.basicConfig(level=logging.DEBUG)
     if(get_conf()['MPD_WAIT_START']):
         while True:
