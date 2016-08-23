@@ -49,12 +49,16 @@ def generate(spec):
                             os.getuid()))
     try:
         log.info('Going to run {}'.format([scriptpath] + args))
+        env = dict(
+            HOME=os.environ['HOME'],
+            PATH=os.environ['PATH'],
+            MPD_HOST=conf['MPD_HOST'],
+            MPD_PORT=str(conf['MPD_PORT'])
+        )
+        if 'TMPDIR' in os.environ:
+            env['TMPDIR'] = os.environ['TMPDIR']
         out = subprocess.check_output([scriptpath] + args,
-                                      env=dict(
-                                          HOME=os.environ['HOME'],
-                                          PATH=os.environ['PATH'],
-                                          MPD_HOST=conf['MPD_HOST'],
-                                          MPD_PORT=str(conf['MPD_PORT'])),
+                                      env=env,
                                       cwd='/')
     except subprocess.CalledProcessError as exc:
         log.error("Error %d when running script %s" %
