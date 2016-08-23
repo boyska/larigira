@@ -4,13 +4,15 @@ import gc
 from copy import deepcopy
 
 from greenlet import greenlet
-from flask import current_app, Blueprint, Flask, jsonify
+from flask import current_app, Blueprint, Flask, jsonify, render_template
 from flask_bootstrap import Bootstrap
 
 from .dbadmin import db
 from .config import get_conf
 
 rpc = Blueprint('rpc', __name__, url_prefix='/api')
+viewui = Blueprint('view', __name__, url_prefix='/view',
+                   template_folder='templates')
 
 
 def send_to_parent(kind, *args):
@@ -57,6 +59,16 @@ def get_scheduled_audiogen():
                 for actid in info['timespec']['actions']}
         info['greenlet'] = hex(id(orig_info['greenlet']))
     return events
+
+
+@viewui.route('/status/running')
+def ui_wip():
+    audiogens = get_scheduled_audiogen()
+    return render_template('running.html',
+                           audiogens=sorted(
+                               audiogens.items(),
+                               key=lambda x: x[1]['running_time'])
+                           )
 
 
 @rpc.route('/debug/running')
@@ -114,6 +126,7 @@ def create_app(queue, larigira):
     app.config.update(get_conf())
     Bootstrap(app)
     app.register_blueprint(rpc)
+    app.register_blueprint(viewui)
     app.register_blueprint(db)
     app.queue = queue
     app.larigira = larigira

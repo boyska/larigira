@@ -1,0 +1,45 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Larigira - Upcoming events{%endblock%}
+
+{%macro print_action(aid, action)%}
+<span class="action-nick"  data-actionid="{{aid}}" data-kind="{{action['kind']}}">
+{% if 'nick' in action %}
+{{action['nick']}}
+{% else %}
+{{ action['kind'] }}
+{% endif %}
+{%endmacro%}
+
+{%macro print_actions(actions)%}
+{% if actions|length == 0 %}
+<span class="action-none">NOTHING</span>
+{% else %}
+<span class="action">{{print_action(*actions.items()|first)}}</span>
+{% endif %}
+{%endmacro%}
+
+
+{% block content %}
+<h1>Upcoming events</h2>
+<div class="container-fluid">
+	<table class="upcoming-events table table-striped">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>Running time</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+		{% for id, event in audiogens %}
+		<tr>
+			<td>{{id}}</td>
+			<td>{{event['running_time']}}</td>
+			<td>{{print_actions(event['timespec']['actions'])}}</td>
+		</tr>
+		{%endfor%}
+	</table>
+</div>
+{% endblock content %}
+
+{# vim: set ts=2 sw=2 noet: #}
