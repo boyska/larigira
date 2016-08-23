@@ -152,7 +152,13 @@ class Monitor(ParentedLet):
             'should play %s' % str(g.value)))
         audiogen.link_exception(lambda g: self.log.exception(
             'Failure in audiogen {}: {}'.format(audiospec, audiogen.exception)))
-        audiogen.link_value(lambda g: self.send_to_parent('add', g.value))
+        audiogen.link_value(lambda g:
+                            self.send_to_parent('add',
+                                                dict(uris=g.value,
+                                                     audiospec=audiospec,
+                                                     aid=audiospec.eid
+                                                    ))
+                           )
 
     def _run(self):
         self.source.start()

@@ -70,14 +70,19 @@ class Player(gevent.Greenlet):
 
     def enqueue(self, songs):
         mpd_client = self._get_mpd()
-        for song in songs:
-            self.log.info('Adding {} to playlist'.format(song))
+        assert type(songs) is dict
+        assert 'uris' in songs
+        spec = songs['audiospec']
+        for uri in songs['uris']:
+            assert type(uri) is str
+            self.log.info('Adding {} to playlist (from {}={})'.
+                          format(uri, songs['aid'], spec))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
                 int(mpd_client.currentsong().get('pos', 0)) + 1
             try:
-                mpd_client.addid(song, insert_pos)
+                mpd_client.addid(uri, insert_pos)
             except CommandError:
-                self.log.exception("Cannot insert song {}".format(song))
+                self.log.exception("Cannot insert song {}".format(uri))
 
     def _run(self):
         mw = MpcWatcher(self.q, self.conf, client=None)
