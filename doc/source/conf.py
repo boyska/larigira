@@ -284,11 +284,14 @@ def run_apidoc(_):
         print(red("No apidoc available!"), file=sys.stderr)
         return
     for module in modules:
-        subprocess.check_call([cmd_path,
-                               '--force',
-                               '-o', output_path,
-                               module
-                               ] + exclude_files)
+        try:
+            subprocess.check_call([cmd_path,
+                                   '--force',
+                                   '-o', output_path,
+                                   module
+                                   ] + exclude_files)
+        except subprocess.CalledProcessError:
+            print(red("APIdoc failed for module {}".format(module)))
 
 
 def setup(app):
