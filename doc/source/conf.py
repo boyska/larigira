@@ -289,7 +289,9 @@ def run_apidoc(_):
                                    '--force',
                                    '-o', output_path,
                                    module
-                                   ] + exclude_files)
+                                   ] + exclude_files,
+                                  cwd=proj_dir
+                                 )
         except subprocess.CalledProcessError:
             print(red("APIdoc failed for module {}".format(module)))
 
