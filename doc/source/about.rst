@@ -24,7 +24,7 @@ simplicity and flexibility.
 Code structure and core concepts
 -----------------------------------
 
-The code is heavily based on gevent.
+The code is heavily based on gevent: almost everything is a greenlet.
 
 alarm
   An alarm is a specification of timings. It is "something that can generate
@@ -42,3 +42,25 @@ action
 
 event
   An event is an alarm plus a list of actions. At given times, do those things
+
+The main object is :class:`larigira.mpc.Player`; as the name says, it is the only object that sends messages
+to MPD. How does it know what to do? there are two main flows: the continous playlist filling and the alarm
+system.
+
+Continous playlist
+~~~~~~~~~~~~~~~~~~
+
+:class:`larigira.mpc.Player` has a "child" called :class:`larigira.mpc.MpcWatcher`. It watches for events on
+the playlist; when the playlist is changed it notifies Player, which in turn will check if the playlist has
+enough songs. If that's the case, it will spawn an audiogenerator in a new greenlet; when the audio will be
+ready, it will be added at the bottom of the playlist.
+
+Alarm system
+~~~~~~~~~~~~
+
+There is a DB. The lowest level is handled by TinyDB. :class:`larigira.event.EventModel` is a thin layer on
+it, providing more abstract functions. The real deal is :class:`larigira.event.EventSource`, which is a
+greenlet that sends notifications about alarms in the DB. Those notifications are received by
+:class:`larigira.event.Monitor`, which "runs" them; it executes the time specification, make an appropriate
+"sleep" and after that runs the audiogenerator.
+
