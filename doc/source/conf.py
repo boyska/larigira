@@ -13,9 +13,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from __future__ import print_function
 import sys
 import os
 import subprocess
+
+from sphinx.util.console import red
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -270,14 +273,17 @@ def run_apidoc(_):
     modules = ['larigira']
     exclude_files = [os.path.abspath(os.path.join(proj_dir, excl))
                      for excl in ('larigira/rpc.py', 'larigira/dbadmin/')]
+    output_path = os.path.join(cur_dir, 'api')
+    cmd_path = 'sphinx-apidoc'
+    if hasattr(sys, 'real_prefix'):  # Are we in a virtualenv?
+        # assemble the path manually
+        cmd_path = os.path.abspath(os.path.join(sys.prefix,
+                                                'bin',
+                                                'sphinx-apidoc'))
+    if not os.path.exists(cmd_path):
+        print(red("No apidoc available!"), file=sys.stderr)
+        return
     for module in modules:
-        output_path = os.path.join(cur_dir, 'api')
-        cmd_path = 'sphinx-apidoc'
-        if hasattr(sys, 'real_prefix'):  # Are we in a virtualenv?
-            # assemble the path manually
-            cmd_path = os.path.abspath(os.path.join(sys.prefix,
-                                                    'bin',
-                                                    'sphinx-apidoc'))
         subprocess.check_call([cmd_path,
                                '--force',
                                '-o', output_path,
