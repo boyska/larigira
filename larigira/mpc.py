@@ -10,7 +10,7 @@ from audiogen import audiogenerate
 
 
 def get_mpd_client(conf):
-    client = MPDClient()
+    client = MPDClient(use_unicode=True)
     client.connect(conf['MPD_HOST'], conf['MPD_PORT'])
 
     return client
@@ -51,7 +51,7 @@ class Player(gevent.Greenlet):
         self.conf = conf
 
     def _get_mpd(self):
-        mpd_client = MPDClient()
+        mpd_client = MPDClient(use_unicode=True)
         mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
         return mpd_client
 
@@ -65,7 +65,13 @@ class Player(gevent.Greenlet):
         self.log.info('need to add new songs')
         picker = gevent.Greenlet(audiogenerate,
                                  self.conf['CONTINOUS_AUDIODESC'])
-        picker.link_value(lambda g: mpd_client.add(g.value[0].strip()))
+
+        def add(greenlet):
+            uris = greenlet.value
+            for uri in uris:
+                assert type(uri) is unicode, type(uri)
+                mpd_client.add(uri.strip())
+        picker.link_value(add)
         picker.start()
 
     def enqueue(self, songs):
@@ -74,7 +80,7 @@ class Player(gevent.Greenlet):
         assert 'uris' in songs
         spec = songs['audiospec']
         for uri in songs['uris']:
-            assert type(uri) is str
+            assert type(uri) is unicode
             self.log.info('Adding {} to playlist (from {}={})'.
                           format(uri, songs['aid'], spec))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \

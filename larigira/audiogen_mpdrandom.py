@@ -12,7 +12,7 @@ def generate_by_artist(spec):
     spec.setdefault('howmany', 1)
     log.info('generating')
     conf = get_conf()
-    c = MPDClient()
+    c = MPDClient(use_unicode=True)
     c.connect(conf['MPD_HOST'], conf['MPD_PORT'])
 
     artists = c.list('artist')
