@@ -10,6 +10,7 @@ security reasons).
 The script should assume a minimal environment, and being run from /.  It must
 output one URI per line; please remember that URI must be understood from mpd,
 so file paths are not valid; file:///file/path.ogg is a valid URI instead.
+The output MUST be UTF-8-encoded.
 Empty lines will be skipped.  stderr will be logged, so please be careful.  any
 non-zero exit code will result in no files being added.and an exception being
 logged.
@@ -65,6 +66,7 @@ def generate(spec):
                   (exc.returncode, spec['name']))
         return []
 
+    out = out.decode('utf-8')
     out = [p for p in out.split('\n') if p]
     logging.debug('Script %s produced %d files' % (spec['name'], len(out)))
     return out

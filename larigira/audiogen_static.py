@@ -21,4 +21,4 @@ def generate(spec):
                       prefix='audiogen-static-')
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
-        yield 'file://' + tmp[1]
+        yield u'file://{}'.format(tmp[1])
