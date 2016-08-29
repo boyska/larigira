@@ -19,7 +19,7 @@ import logging
 import os
 import subprocess
 
-from config import get_conf
+from .config import get_conf
 log = logging.getLogger('audioscript')
 
 

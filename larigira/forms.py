@@ -1,6 +1,6 @@
 from logging import getLogger
 log = getLogger('timeform')
-from entrypoints_utils import get_one_entrypoint
+from .entrypoints_utils import get_one_entrypoint
 
 
 def get_timeform(kind):

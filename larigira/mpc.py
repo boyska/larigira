@@ -5,8 +5,8 @@ import gevent
 from gevent.queue import Queue
 from mpd import MPDClient, ConnectionError, CommandError
 
-from eventutils import ParentedLet, Timer
-from audiogen import audiogenerate
+from .eventutils import ParentedLet, Timer
+from .audiogen import audiogenerate
 
 
 def get_mpd_client(conf):
@@ -69,7 +69,7 @@ class Player(gevent.Greenlet):
         def add(greenlet):
             uris = greenlet.value
             for uri in uris:
-                assert type(uri) is unicode, type(uri)
+                assert type(uri) is str, type(uri)
                 mpd_client.add(uri.strip())
         picker.link_value(add)
         picker.start()
@@ -80,7 +80,7 @@ class Player(gevent.Greenlet):
         assert 'uris' in songs
         spec = songs['audiospec']
         for uri in songs['uris']:
-            assert type(uri) is unicode
+            assert type(uri) is str
             self.log.info('Adding {} to playlist (from {}={})'.
                           format(uri, songs['aid'], spec))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \

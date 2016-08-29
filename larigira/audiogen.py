@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 import argparse
-from entrypoints_utils import get_one_entrypoint
+from .entrypoints_utils import get_one_entrypoint
 import json
 from logging import getLogger
 log = getLogger('audiogen')

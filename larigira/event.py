@@ -13,9 +13,9 @@ import gevent
 from gevent.queue import Queue
 from tinydb import TinyDB
 
-from eventutils import ParentedLet
-from timegen import timegenerate
-from audiogen import audiogenerate
+from .eventutils import ParentedLet
+from .timegen import timegenerate
+from .audiogen import audiogenerate
 
 
 class EventModel(object):

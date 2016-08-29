@@ -20,7 +20,7 @@ def range_parentlet():
             self.howmany = howmany
 
         def do_business(self):
-            for i in xrange(self.howmany):
+            for i in range(self.howmany):
                 yield('range', i)
     return RangeLet
 

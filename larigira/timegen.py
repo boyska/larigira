@@ -3,12 +3,12 @@ main module to read and get informations about alarms
 '''
 from __future__ import print_function
 import sys
+from datetime import datetime
 import argparse
-from entrypoints_utils import get_one_entrypoint
 import json
+from .entrypoints_utils import get_one_entrypoint
 from logging import getLogger
 log = getLogger('timegen')
-from datetime import datetime
 
 
 def get_timegenerator(kind):
@@ -52,7 +52,7 @@ def timegenerate(spec, now=None, howmany=1):
     if now is not None:
         if type(now) is not datetime:
             now = datetime.fromtimestamp(now)
-    for _ in xrange(howmany):
+    for _ in range(howmany):
         now = generator.next_ring(current_time=now)
         yield now
 

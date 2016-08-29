@@ -4,7 +4,7 @@ import random
 
 from mpd import MPDClient
 
-from config import get_conf
+from .config import get_conf
 
 
 def generate_by_artist(spec):
@@ -19,6 +19,6 @@ def generate_by_artist(spec):
     log.debug("got %d artists" % len(artists))
     if not artists:
         raise ValueError("no artists in your mpd database")
-    for _ in xrange(spec['howmany']):
+    for _ in range(spec['howmany']):
         artist = random.choice(artists)
         yield random.choice(c.find('artist', artist))['file']
