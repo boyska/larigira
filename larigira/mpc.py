@@ -110,6 +110,11 @@ class Player(gevent.Greenlet):
             elif kind == 'mpc':
                 pass
             elif kind == 'add':
-                self.enqueue(args[0])
+                try:
+                    self.enqueue(args[0])
+                except AssertionError:
+                    raise
+                except Exception as exc:
+                    self.log.exception("Error while adding to queue; bad audiogen output?")
             else:
                 self.log.warning("Unknown message: %s" % str(value))
