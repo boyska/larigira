@@ -81,5 +81,9 @@ setup(name='larigira',
               'static = larigira.audioform_static:staticaudio_receive',
               'script = larigira.audioform_script:scriptaudio_receive',
           ],
-      }
+      },
+      classifiers=[
+          "License :: OSI Approved :: GNU Affero General Public License v3",
+          "Programming Language :: Python :: 3",
+      ]
       )
