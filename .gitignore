@@ -11,3 +11,4 @@ larigira.db_*
 .coverage
 *.db
 doc/source/api/larigira.rst
+.eggs/
