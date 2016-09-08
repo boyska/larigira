@@ -116,7 +116,7 @@ class Controller(gevent.Greenlet):
                 gevent.Greenlet.spawn(self.player.check_playlist)
             elif kind == 'mpc':
                 pass
-            elif kind == 'add':
+            elif kind == 'uris_enqueue':
                 try:
                     self.player.enqueue(args[0])
                 except AssertionError:

@@ -154,9 +154,9 @@ class Monitor(ParentedLet):
                           'registry; this is most likely a bug'.
                           format(timespec.get('nick', timespec.eid)))
         uris = audiogenerate(audiospec)
-        self.send_to_parent('add', dict(uris=uris,
-                                        audiospec=audiospec,
-                                        aid=audiospec.eid))
+        self.send_to_parent('uris_enqueue', dict(uris=uris,
+                                                 audiospec=audiospec,
+                                                 aid=audiospec.eid))
 
     def _run(self):
         self.ticker.start()
