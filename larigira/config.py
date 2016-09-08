@@ -24,6 +24,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['MPD_WAIT_START'] = True
     conf['MPD_WAIT_START_RETRYSECS'] = 5
     conf['CHECK_SECS'] = 20
+    conf['DEBUG'] = False
     conf.update(from_envvars(prefix=prefix))
     return conf
 

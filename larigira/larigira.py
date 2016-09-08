@@ -11,10 +11,6 @@ import tempfile
 import signal
 from time import sleep
 import logging
-FORMAT = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
-logging.basicConfig(level=logging.INFO,
-                    format=FORMAT,
-                    datefmt='%H:%M:%S')
 
 import gevent
 from gevent.wsgi import WSGIServer
@@ -52,7 +48,10 @@ class Larigira(object):
 
 def main():
     os.environ['TMPDIR'] = tempfile.mkdtemp(prefix='larigira')
-    logging.basicConfig(level=logging.DEBUG)
+    log_format = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
+    logging.basicConfig(level=logging.DEBUG if get_conf()['DEBUG'] else logging.INFO,
+                        format=log_format,
+                        datefmt='%H:%M:%S')
     if(get_conf()['MPD_WAIT_START']):
         while True:
             try:

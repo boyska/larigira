@@ -2,10 +2,6 @@ from __future__ import print_function
 from gevent import monkey
 monkey.patch_all(subprocess=True)
 import logging
-FORMAT = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
-logging.basicConfig(level=logging.INFO,
-                    format=FORMAT,
-                    datefmt='%H:%M:%S')
 logging.getLogger('mpd').setLevel(logging.WARNING)
 from datetime import datetime, timedelta
 
