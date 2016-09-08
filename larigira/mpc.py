@@ -42,13 +42,11 @@ class MpcWatcher(ParentedLet):
             yield ('mpc', status)
 
 
-class Player(gevent.Greenlet):
+class Player:
     def __init__(self, conf):
-        gevent.Greenlet.__init__(self)
-        self.min_playlist_length = 10
-        self.log = logging.getLogger(self.__class__.__name__)
-        self.q = Queue()
         self.conf = conf
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.min_playlist_length = 10
 
     def _get_mpd(self):
         mpd_client = MPDClient(use_unicode=True)
@@ -90,6 +88,15 @@ class Player(gevent.Greenlet):
             except CommandError:
                 self.log.exception("Cannot insert song {}".format(uri))
 
+
+class Controller(gevent.Greenlet):
+    def __init__(self, conf):
+        gevent.Greenlet.__init__(self)
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.conf = conf
+        self.q = Queue()
+        self.player = Player(self.conf)
+
     def _run(self):
         mw = MpcWatcher(self.q, self.conf, client=None)
         mw.parent_greenlet = self
@@ -98,7 +105,7 @@ class Player(gevent.Greenlet):
         t.parent_greenlet = self
         t.start()
         # at the very start, run a check!
-        gevent.Greenlet.spawn(self.check_playlist)
+        gevent.Greenlet.spawn(self.player.check_playlist)
         while True:
             value = self.q.get()
             self.log.debug('<- %s' % str(value))
@@ -106,15 +113,15 @@ class Player(gevent.Greenlet):
             kind = value['kind']
             args = value['args']
             if kind == 'timer' or (kind == 'mpc' and args[0] in ('player', 'playlist')):
-                gevent.Greenlet.spawn(self.check_playlist)
+                gevent.Greenlet.spawn(self.player.check_playlist)
             elif kind == 'mpc':
                 pass
             elif kind == 'add':
                 try:
-                    self.enqueue(args[0])
+                    self.player.enqueue(args[0])
                 except AssertionError:
                     raise
-                except Exception as exc:
+                except Exception:
                     self.log.exception("Error while adding to queue; bad audiogen output?")
             else:
                 self.log.warning("Unknown message: %s" % str(value))

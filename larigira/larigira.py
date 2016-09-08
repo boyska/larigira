@@ -19,13 +19,13 @@ logging.basicConfig(level=logging.INFO,
 import gevent
 from gevent.wsgi import WSGIServer
 
-from .mpc import Player, get_mpd_client
+from .mpc import Controller, get_mpd_client
 from .event import Monitor
 from .config import get_conf
 from .rpc import create_app
 
 
-def on_player_crash(*args, **kwargs):
+def on_main_crash(*args, **kwargs):
     print('A crash occurred in "main" greenlet. Aborting...')
     sys.exit(1)
 
@@ -34,17 +34,17 @@ class Larigira(object):
     def __init__(self):
         self.log = logging.getLogger('larigira')
         self.conf = get_conf()
-        self.player = Player(self.conf)
+        self.controller = Controller(self.conf)
         if 'DB_URI' in self.conf:
-            self.monitor = Monitor(self.player.q, self.conf)
+            self.monitor = Monitor(self.controller.q, self.conf)
         else:
             self.monitor = None
-        self.player.link_exception(on_player_crash)
+        self.controller.link_exception(on_main_crash)
         self.http_server = WSGIServer(('', 5000),
-                                      create_app(self.player.q, self))
+                                      create_app(self.controller.q, self))
 
     def start(self):
-        self.player.start()
+        self.controller.start()
         if self.monitor is not None:
             self.monitor.start()
         self.http_server.start()
@@ -71,7 +71,7 @@ def main():
 
     def sig(*args):
         print('invoked sig', args)
-        larigira.player.q.put('signal', *args)
+        larigira.controller.q.put('signal', *args)
     gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
     gevent.wait()
 
