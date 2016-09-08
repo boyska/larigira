@@ -71,7 +71,7 @@ def main():
 
     def sig(*args):
         print('invoked sig', args)
-        larigira.controller.q.put('signal', *args)
+        larigira.controller.q.put(dict(kind='signal', args=args))
     gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
     gevent.wait()
 
