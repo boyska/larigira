@@ -13,9 +13,10 @@ Software stack
 ---------------
 
 * MPD, of course
-* python2
-  * gevent as an async framework
-  * flask to provide web interface and rpc
+* python3
+
+  - gevent as an async framework
+  - flask to provide web interface and rpc
 * tinydb as an embedded database
 
 Why? (aka design features)
