@@ -44,8 +44,8 @@ def rpc_refresh():
 
 def get_scheduled_audiogen():
     larigira = current_app.larigira
-    model = larigira.monitor.source.model
-    running = larigira.monitor.running
+    model = larigira.controller.monitor.model
+    running = larigira.controller.monitor.running
     events = {t: {} for t in running.keys()}
     for timespec_eid in events:
         orig_info = running[timespec_eid]
