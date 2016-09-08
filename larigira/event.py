@@ -17,7 +17,13 @@ from .audiogen import audiogenerate
 class EventModel(object):
     def __init__(self, uri):
         self.uri = uri
-        self.db = TinyDB(uri)
+        self.db = None
+        self.reload()
+
+    def reload(self):
+        if self.db is not None:
+            self.db.close()
+        self.db = TinyDB(self.uri)
         self.actions = self.db.table('actions')
         self.alarms = self.db.table('alarms')
 
@@ -104,6 +110,7 @@ class Monitor(ParentedLet):
         it is advisable to run it in its own greenlet); if the event is "near
         enough", schedule it; if it is too far, or already expired, ignore it.
         '''
+        self.model.reload()
         for alarm, action in self.model.get_all_alarms_expanded():
             if alarm.eid in self.running:
                 continue
