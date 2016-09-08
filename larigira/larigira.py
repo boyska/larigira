@@ -16,7 +16,6 @@ import gevent
 from gevent.wsgi import WSGIServer
 
 from .mpc import Controller, get_mpd_client
-from .event import Monitor
 from .config import get_conf
 from .rpc import create_app
 
@@ -31,18 +30,12 @@ class Larigira(object):
         self.log = logging.getLogger('larigira')
         self.conf = get_conf()
         self.controller = Controller(self.conf)
-        if 'DB_URI' in self.conf:
-            self.monitor = Monitor(self.controller.q, self.conf)
-        else:
-            self.monitor = None
         self.controller.link_exception(on_main_crash)
         self.http_server = WSGIServer(('', 5000),
                                       create_app(self.controller.q, self))
 
     def start(self):
         self.controller.start()
-        if self.monitor is not None:
-            self.monitor.start()
         self.http_server.start()
 
 
@@ -71,7 +64,8 @@ def main():
     def sig(*args):
         print('invoked sig', args)
         larigira.controller.q.put(dict(kind='signal', args=args))
-    gevent.signal(signal.SIGHUP, sig, signal.SIGHUP)
+    for signum in (signal.SIGHUP, signal.SIGALRM):
+        gevent.signal(signum, sig, signum)
     gevent.wait()
 
 if __name__ == '__main__':

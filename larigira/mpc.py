@@ -1,10 +1,12 @@
 from __future__ import print_function
 import logging
+import signal
 
 import gevent
 from gevent.queue import Queue
 from mpd import MPDClient, ConnectionError, CommandError
 
+from .event import Monitor
 from .eventutils import ParentedLet, Timer
 from .audiogen import audiogenerate
 
@@ -96,8 +98,15 @@ class Controller(gevent.Greenlet):
         self.conf = conf
         self.q = Queue()
         self.player = Player(self.conf)
+        if 'DB_URI' in self.conf:
+            self.monitor = Monitor(self.q, self.conf)
+            self.monitor.parent_greenlet = self
+        else:
+            self.monitor = None
 
     def _run(self):
+        if self.monitor is not None:
+            self.monitor.start()
         mw = MpcWatcher(self.q, self.conf, client=None)
         mw.parent_greenlet = self
         mw.start()
@@ -112,7 +121,8 @@ class Controller(gevent.Greenlet):
             # emitter = value['emitter']
             kind = value['kind']
             args = value['args']
-            if kind == 'timer' or (kind == 'mpc' and args[0] in ('player', 'playlist')):
+            if kind == 'timer' or (kind == 'mpc' and
+                                   args[0] in ('player', 'playlist')):
                 gevent.Greenlet.spawn(self.player.check_playlist)
             elif kind == 'mpc':
                 pass
@@ -122,6 +132,11 @@ class Controller(gevent.Greenlet):
                 except AssertionError:
                     raise
                 except Exception:
-                    self.log.exception("Error while adding to queue; bad audiogen output?")
+                    self.log.exception("Error while adding to queue; "
+                                       "bad audiogen output?")
+            elif kind == 'signal' and args[0] == signal.SIGALRM:
+                # it's a tick!
+                self.monitor.q.put(dict(kind='forcetick'))
+                gevent.Greenlet.spawn(self.player.check_playlist)
             else:
                 self.log.warning("Unknown message: %s" % str(value))

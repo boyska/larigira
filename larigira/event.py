@@ -171,7 +171,7 @@ class Monitor(ParentedLet):
         while True:
             value = self.q.get()
             kind = value['kind']
-            if kind == 'timer':
+            if kind in ('forcetick', 'timer'):
                 gevent.spawn(self.on_tick)
             else:
                 self.log.warning("Unknown message: %s" % str(value))
