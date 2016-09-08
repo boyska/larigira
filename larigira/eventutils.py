@@ -36,7 +36,7 @@ class ParentedLet(gevent.Greenlet):
 
 
 class Timer(ParentedLet):
-    '''wait some time, then send a "timer" message to parent'''
+    '''continously sleeps some time, then send a "timer" message to parent'''
     def __init__(self, milliseconds, queue):
         ParentedLet.__init__(self, queue)
         self.ms = milliseconds

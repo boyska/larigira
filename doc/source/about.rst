@@ -57,8 +57,13 @@ Alarm system
 ~~~~~~~~~~~~
 
 There is a DB. The lowest level is handled by TinyDB. :class:`larigira.event.EventModel` is a thin layer on
-it, providing more abstract functions. The real deal is :class:`larigira.event.EventSource`, which is a
-greenlet that sends notifications about alarms in the DB. Those notifications are received by
-:class:`larigira.event.Monitor`, which "runs" them; it executes the time specification, make an appropriate
-"sleep" and after that runs the audiogenerator.
+it, providing more abstract functions.
 
+There is a :class:`Monitor <larigira.event.Monitor>`, which is something that, well, "monitors" the DB and
+schedule events appropriately. It will check alarms every ``EVENT_TICK_SECS`` seconds, or when larigira received
+a ``SIGALRM`` (so ``pkill -ALRM larigira`` might be useful for you).
+
+You can view scheduled events using the web interface, at ``/view/status/running``. Please note that you will
+only see *scheduled* events, which are events that will soon be added to playlist. That page will not give you
+information about events that will run in more than ``2 * EVENT_TICK_SECS`` seconds (by default, this amounts
+to 1 minute).
