@@ -43,17 +43,15 @@ action
 event
   An event is an alarm plus a list of actions. At given times, do those things
 
-The main object is :class:`larigira.mpc.Player`; as the name says, it is the only object that sends messages
-to MPD. How does it know what to do? there are two main flows: the continous playlist filling and the alarm
+The main object is :class:`larigira.mpc.Controller`, which in turn uses :class:`larigira.mpc.Player` to control MPD. How does it know what to do? there are two main flows: the continous playlist filling and the alarm
 system.
 
 Continous playlist
 ~~~~~~~~~~~~~~~~~~
 
-:class:`larigira.mpc.Player` has a "child" called :class:`larigira.mpc.MpcWatcher`. It watches for events on
-the playlist; when the playlist is changed it notifies Player, which in turn will check if the playlist has
-enough songs. If that's the case, it will spawn an audiogenerator in a new greenlet; when the audio will be
-ready, it will be added at the bottom of the playlist.
+:class:`larigira.mpc.Controller` has a "child" called :class:`larigira.mpc.MpcWatcher`. It watches for events on
+the playlist; when the playlist is changed it notifies Controller, which in turn will check if the playlist has
+enough songs. If that's the case, it will run an audiogenerator, and add the resulting audio at the bottom of the playlist.
 
 Alarm system
 ~~~~~~~~~~~~
