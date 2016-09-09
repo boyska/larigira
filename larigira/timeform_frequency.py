@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from pytimeparse.timeparse import timeparse
 from flask_wtf import Form
 from wtforms import StringField, DateTimeField, validators, \

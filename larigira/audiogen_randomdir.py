@@ -8,11 +8,9 @@ import fnmatch
 
 def scan_dir(dirname, extension=None):
     if extension is None:
-        fnfilter = lambda fnames: fnames
-    else:
-        fnfilter = lambda fnames: fnmatch.filter(fnames, extension)
+        extension = '*'
     for root, dirnames, filenames in os.walk(dirname):
-        for fname in fnfilter(filenames):
+        for fname in fnmatch.filter(filenames, extension):
             yield os.path.join(root, fname)
 
 
