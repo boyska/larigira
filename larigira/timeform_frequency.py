@@ -1,8 +1,9 @@
 from __future__ import print_function
 
+from pytimeparse.timeparse import timeparse
 from flask_wtf import Form
-from wtforms import StringField, DateTimeField, IntegerField, validators, \
-        SubmitField
+from wtforms import StringField, DateTimeField, validators, \
+        SubmitField, ValidationError
 
 
 class FrequencyAlarmForm(Form):
@@ -16,10 +17,20 @@ class FrequencyAlarmForm(Form):
                         validators=[validators.optional()],
                         description='Date after which no alarm will ring, '
                         'expressed as YYYY-MM-DD HH:MM:SS')
-    interval = IntegerField(u'Frequency',
-                            validators=[validators.required()],
-                            description='in seconds')
+    interval = StringField(u'Frequency',
+                           validators=[validators.required()],
+                           description='in seconds, or human-readable '
+                           '(like 9w3d12h)')
     submit = SubmitField(u'Submit')
+
+    def validate_interval(form, field):
+        try:
+            int(field.data)
+        except ValueError:
+            if timeparse(field.data) is None:
+                raise ValidationError("interval must either be a number "
+                                      "(in seconds) or a human-readable "
+                                      "string like '1h2m'  or '1d12h'")
 
 
 def frequencyalarm_receive(form):
@@ -32,4 +43,3 @@ def frequencyalarm_receive(form):
     if form.end.data:
         obj['end'] = int(form.end.data.strftime('%s'))
     return obj
-
