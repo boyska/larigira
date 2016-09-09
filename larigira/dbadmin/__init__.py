@@ -6,7 +6,7 @@ Templates are self-contained in this directory
 from __future__ import print_function
 
 from flask import current_app, Blueprint, render_template, jsonify, abort, \
-    request
+    request, redirect, url_for
 
 from larigira.entrypoints_utils import get_avail_entrypoints
 from larigira import forms
@@ -41,7 +41,7 @@ def addtime_kind(kind):
         data = receiver(form)
         model = current_app.larigira.monitor.source.model
         eid = model.add_alarm(data)
-        return jsonify(dict(inserted=eid, data=data))
+        return redirect(url_for('db.edit_event', alarmid=eid))
 
     return render_template('add_time_kind.html', form=form, kind=kind)
 
