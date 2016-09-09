@@ -39,11 +39,11 @@ setup(name='larigira',
       install_requires=[
           'pyxdg',
           'gevent',
-          'flask',
           'flask-bootstrap',
           'python-mpd2',
           'wtforms',
           'Flask-WTF',
+          'flask==0.11',
           'pytimeparse',
           'tinydb'
       ],
