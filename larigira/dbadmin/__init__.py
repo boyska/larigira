@@ -86,5 +86,6 @@ def change_actions(alarmid):
         new_actions = []
     model = current_app.larigira.monitor.source.model
     ret = model.update_alarm(int(alarmid),
-                             new_fields={'actions': map(int, new_actions)})
+                             new_fields={'actions': [int(a) for a in
+                                                     new_actions]})
     return jsonify(dict(updated=alarmid, ret=ret))
