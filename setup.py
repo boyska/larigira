@@ -44,6 +44,7 @@ setup(name='larigira',
           'python-mpd2',
           'wtforms',
           'Flask-WTF',
+          'pytimeparse',
           'tinydb'
       ],
       tests_require=['pytest', 'pytest-timeout'],

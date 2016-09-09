@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from pprint import pprint
 
 import pytest
@@ -17,8 +17,28 @@ def eq_(a, b, reason=None):
 
 @pytest.fixture
 def now():
-    from datetime import datetime
     return datetime.now()
+
+
+@pytest.fixture(params=['seconds', 'human', 'humanlong', 'coloned'])
+def onehour(now, request):
+    '''a FrequencyAlarm: every hour for one day'''
+    intervals = dict(seconds=3600, human='1h', humanlong='30m 1800s',
+                     coloned='01:00:00')
+    return FrequencyAlarm({
+        'start': now - timedelta(days=1),
+        'interval': intervals[request.param],
+        'end': now + days(1)})
+
+
+@pytest.fixture(params=['seconds', 'human', 'coloned'])
+def tenseconds(now, request):
+    '''a FrequencyAlarm: every 10 seconds for one day'''
+    intervals = dict(seconds=10, human='10s', coloned='00:10')
+    return FrequencyAlarm({
+        'start': now - timedelta(days=1),
+        'interval': intervals[request.param],
+        'end': now + days(1)})
 
 
 def days(n):
@@ -60,12 +80,8 @@ def test_single_all(now):
     eq_(list(s.all_rings(now + days(2))),  [])
 
 
-def test_freq_short(now):
-    f = FrequencyAlarm({
-        'start': now - days(1),
-        'interval': 10,
-        'end': now + days(1)
-    })
+def test_freq_short(now, tenseconds):
+    f = tenseconds
     assert now in f.all_rings(now - days(3))
     assert f.next_ring(now) is not None
     assert f.next_ring(now) != now
@@ -76,12 +92,8 @@ def test_freq_short(now):
 
 
 @pytest.mark.timeout(1)
-def test_freq_ring(now):
-    f = FrequencyAlarm({
-        'start': now - days(1),
-        'interval': 3600,
-        'end': now + days(1)
-    })
+def test_freq_ring(now, onehour):
+    f = onehour
     assert now in f.all_rings(now - days(3))
     assert f.next_ring(now) is not None
     assert f.next_ring(now) != now

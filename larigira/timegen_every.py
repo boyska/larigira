@@ -3,6 +3,8 @@ import logging
 log = logging.getLogger('time-every')
 from datetime import datetime, timedelta
 
+from pytimeparse.timeparse import timeparse
+
 
 def getdate(val):
     if type(val) is int:
@@ -64,7 +66,11 @@ class FrequencyAlarm(Alarm):
 
     def __init__(self, obj):
         self.start = getdate(obj['start'])
-        self.interval = obj['interval']
+        try:
+            self.interval = int(obj['interval'])
+        except ValueError:
+            self.interval = timeparse(obj['interval'])
+        assert type(self.interval) is int
         self.end = getdate(obj['end']) if 'end' in obj else None
 
     def next_ring(self, current_time=None):
