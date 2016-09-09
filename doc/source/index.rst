@@ -15,6 +15,7 @@ Contents:
    install
    audiogenerators
    audiogenerators-write
+   debug
    api/modules
 
 
