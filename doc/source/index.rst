@@ -13,6 +13,8 @@ Contents:
 
    about
    install
+   audiogenerators
+   audiogenerators-write
    api/modules
 
 
