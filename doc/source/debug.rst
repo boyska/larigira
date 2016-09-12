@@ -46,3 +46,5 @@ This is useful if you want to debug the event system, or if you manually
 changed the data on disk. Please note that the event system will automatically
 reload the DB from disk when appropriate. However, the WebUI will not, so you
 might have a misleading ``/db/list`` page; send an ``ALRM`` in this case.
+
+The same effect can be triggered performing an HTTP ``GET /rpc/refresh``.

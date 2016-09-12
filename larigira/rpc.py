@@ -38,7 +38,7 @@ def rpc_index():
 
 @rpc.route('/refresh')
 def rpc_refresh():
-    send_to_parent('rpc')
+    send_to_parent('refresh')
     return jsonify(dict(status='ok'))
 
 

@@ -134,8 +134,10 @@ class Controller(gevent.Greenlet):
                 except Exception:
                     self.log.exception("Error while adding to queue; "
                                        "bad audiogen output?")
-            elif kind == 'signal' and args[0] == signal.SIGALRM:
+            elif (kind == 'signal' and args[0] == signal.SIGALRM) or \
+                    kind == 'refresh':
                 # it's a tick!
+                self.log.debug("Reload")
                 self.monitor.q.put(dict(kind='forcetick'))
                 gevent.Greenlet.spawn(self.player.check_playlist)
             else:
