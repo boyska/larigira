@@ -78,11 +78,12 @@ class Player:
         mpd_client = self._get_mpd()
         assert type(songs) is dict
         assert 'uris' in songs
-        spec = songs['audiospec']
-        for uri in songs['uris']:
+        spec = [aspec.get('nick', aspec.eid) for aspec in songs['audiospecs']]
+        for uri in reversed(songs['uris']):
             assert type(uri) is str
-            self.log.info('Adding {} to playlist (from {}={})'.
-                          format(uri, songs['aid'], spec))
+            self.log.info('Adding {} to playlist (from <{}>:{}={})'.
+                          format(uri, songs['timespec'].get('nick', ''),
+                                 songs['aids'], spec))
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
                 int(mpd_client.currentsong().get('pos', 0)) + 1
             try:

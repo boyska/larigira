@@ -111,7 +111,8 @@ class Monitor(ParentedLet):
         enough", schedule it; if it is too far, or already expired, ignore it.
         '''
         self.model.reload()
-        for alarm, action in self.model.get_all_alarms_expanded():
+        for alarm in self.model.get_all_alarms():
+            actions = list(self.model.get_actions_by_alarm(alarm))
             if alarm.eid in self.running:
                 continue
             delta = self._alarm_missing_time(alarm)
@@ -119,19 +120,21 @@ class Monitor(ParentedLet):
             # but it is "tricky"; any small delay would cause the event to be
             # missed
             if delta is not None and delta <= 2*self.conf['EVENT_TICK_SECS']:
-                self.log.debug('Scheduling event {} ({}s)'
+                self.log.debug('Scheduling event {} ({}s) => {}'
                                .format(alarm.get('nick', alarm.eid),
-                                       delta))
-                self.schedule(alarm, action, delta)
+                                       delta,
+                                       [a.get('nick', a.eid) for a in actions]
+                                       ))
+                self.schedule(alarm, actions, delta)
             else:
                 self.log.debug('Skipping event {}, too far ({}s)'
                                .format(alarm.get('nick', alarm.eid),
                                        delta))
 
-    def schedule(self, timespec, audiospec, delta=None):
+    def schedule(self, timespec, audiospecs, delta=None):
         '''
-        prepare an event to be run at a specified time with a specified action;
-        the DB won't be read anymore after this call.
+        prepare an event to be run at a specified time with the specified
+        actions; the DB won't be read anymore after this call.
 
         This means that this call should not be done too early, or any update
         to the DB will be ignored.
@@ -141,18 +144,19 @@ class Monitor(ParentedLet):
 
         audiogen = gevent.spawn_later(delta,
                                       self.process_action,
-                                      timespec, audiospec)
+                                      timespec, audiospecs)
         audiogen.parent_greenlet = self
         audiogen.doc = 'Will wait {} seconds, then generate audio "{}"'.format(
             delta,
-            audiospec.get('nick', ''))
+            ','.join(aspec.get('nick', '') for aspec in audiospecs),
+        )
         self.running[timespec.eid] = {
             'greenlet': audiogen,
             'running_time': datetime.now() + timedelta(seconds=delta),
-            'audiospec': audiospec
+            'audiospec': audiospecs
         }
 
-    def process_action(self, timespec, audiospec):
+    def process_action(self, timespec, audiospecs):
         '''Generate audio and submit it to Controller'''
         if timespec.eid in self.running:
             del self.running[timespec.eid]
@@ -160,10 +164,18 @@ class Monitor(ParentedLet):
             self.log.warn('Timespec {} completed but not in running '
                           'registry; this is most likely a bug'.
                           format(timespec.get('nick', timespec.eid)))
-        uris = audiogenerate(audiospec)
-        self.send_to_parent('uris_enqueue', dict(uris=uris,
-                                                 audiospec=audiospec,
-                                                 aid=audiospec.eid))
+        uris = []
+        for audiospec in audiospecs:
+            try:
+                uris.extend(audiogenerate(audiospec))
+            except:
+                self.log.error('audiogenerate for {} failed'
+                               .format(audiospec))
+        self.send_to_parent('uris_enqueue',
+                            dict(uris=uris,
+                                 timespec=timespec,
+                                 audiospecs=audiospecs,
+                                 aids=[a.eid for a in audiospecs]))
 
     def _run(self):
         self.ticker.start()
