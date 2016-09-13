@@ -153,7 +153,8 @@ class Monitor(ParentedLet):
         self.running[timespec.eid] = {
             'greenlet': audiogen,
             'running_time': datetime.now() + timedelta(seconds=delta),
-            'audiospec': audiospecs
+            'timespec': timespec,
+            'audiospecs': audiospecs
         }
 
     def process_action(self, timespec, audiospecs):

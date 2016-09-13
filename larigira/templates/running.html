@@ -15,7 +15,11 @@
 {% if actions|length == 0 %}
 <span class="action-none">NOTHING</span>
 {% else %}
-<span class="action">{{print_action(*actions.items()|first)}}</span>
+<ol>
+{% for aid, spec in actions.items() %}
+<li>{{print_action(aid, spec)}}</li>
+{% endfor %}
+</li>
 {% endif %}
 {%endmacro%}
 

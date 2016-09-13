@@ -44,19 +44,19 @@ def rpc_refresh():
 
 def get_scheduled_audiogen():
     larigira = current_app.larigira
-    model = larigira.controller.monitor.model
     running = larigira.controller.monitor.running
     events = {t: {} for t in running.keys()}
     for timespec_eid in events:
         orig_info = running[timespec_eid]
         info = events[timespec_eid]
         info['running_time'] = orig_info['running_time'].isoformat()
-        info['audiospec'] = orig_info['audiospec']
-        info['timespec'] = model.get_alarm_by_id(timespec_eid)
-        if 'actions' in info['timespec']:
-            info['timespec']['actions'] = {
-                actid: model.get_action_by_id(actid)
-                for actid in info['timespec']['actions']}
+        info['audiospecs'] = orig_info['audiospecs']
+        info['timespec'] = orig_info['timespec']
+        info['timespec']['actions'] = {aid: spec
+                                       for aid, spec
+                                       in zip(info['timespec']['actions'],
+                                              info['audiospecs'])
+                                       }
         info['greenlet'] = hex(id(orig_info['greenlet']))
     return events
 
