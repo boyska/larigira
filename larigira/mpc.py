@@ -9,6 +9,7 @@ from mpd import MPDClient, ConnectionError, CommandError
 from .event import Monitor
 from .eventutils import ParentedLet, Timer
 from .audiogen import audiogenerate
+from .unused import UnusedCleaner
 
 
 def get_mpd_client(conf):
@@ -99,6 +100,7 @@ class Controller(gevent.Greenlet):
         self.conf = conf
         self.q = Queue()
         self.player = Player(self.conf)
+        self.tmpcleaner = UnusedCleaner(conf)
         if 'DB_URI' in self.conf:
             self.monitor = Monitor(self.q, self.conf)
             self.monitor.parent_greenlet = self
@@ -125,6 +127,7 @@ class Controller(gevent.Greenlet):
             if kind == 'timer' or (kind == 'mpc' and
                                    args[0] in ('player', 'playlist')):
                 gevent.Greenlet.spawn(self.player.check_playlist)
+                self.tmpcleaner.check_playlist()
             elif kind == 'mpc':
                 pass
             elif kind == 'uris_enqueue':
@@ -135,6 +138,9 @@ class Controller(gevent.Greenlet):
                 except Exception:
                     self.log.exception("Error while adding to queue; "
                                        "bad audiogen output?")
+                else:
+                    for fname in args[0]['uris']:
+                        self.tmpcleaner.watch(fname)
             elif (kind == 'signal' and args[0] == signal.SIGALRM) or \
                     kind == 'refresh':
                 # it's a tick!
