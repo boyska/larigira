@@ -10,6 +10,11 @@
 	resubmit
 </div>
 {% endif %}
+{% if mode == 'edit' %}
+<div class="alert alert-info">
+	<strong>Note:</strong> You can change parameters, but you cannot change the <em>kind</em> of this alarm (yet)
+</div>
+{% endif %}
 
 <div class="container-fluid">
 	{{wtf.quick_form(form)}}

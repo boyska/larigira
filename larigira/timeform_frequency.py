@@ -1,4 +1,4 @@
-from __future__ import print_function
+from datetime import datetime
 
 from pytimeparse.timeparse import timeparse
 from flask_wtf import Form
@@ -22,6 +22,15 @@ class FrequencyAlarmForm(Form):
                            description='in seconds, or human-readable '
                            '(like 9w3d12h)')
     submit = SubmitField(u'Submit')
+
+    def populate_from_timespec(self, timespec):
+        if 'nick' in timespec:
+            self.nick.data = timespec['nick']
+        if 'start' in timespec:
+            self.start.data = datetime.fromtimestamp(timespec['start'])
+        if 'end' in timespec:
+            self.end.data = datetime.fromtimestamp(timespec['end'])
+        self.interval.data = timespec['interval']
 
     def validate_interval(form, field):
         try:

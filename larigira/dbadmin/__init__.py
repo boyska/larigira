@@ -13,6 +13,10 @@ from larigira import forms
 db = Blueprint('db', __name__, url_prefix='/db', template_folder='templates')
 
 
+def get_model():
+    return current_app.larigira.controller.monitor.model
+
+
 @db.route('/')
 def home():
     return render_template('dbadmin_base.html')
@@ -33,17 +37,37 @@ def addtime():
     return render_template('add_time.html', kinds=kinds)
 
 
+@db.route('/edit/time/<int:alarmid>', methods=['GET', 'POST'])
+def edit_time(alarmid):
+    model = get_model()
+    timespec = model.get_alarm_by_id(alarmid)
+    kind = timespec['kind']
+    Form, receiver = tuple(forms.get_timeform(kind))
+    form = Form()
+    if request.method == 'GET':
+        form.populate_from_timespec(timespec)
+    if request.method == 'POST' and form.validate():
+        data = receiver(form)
+        model.update_alarm(alarmid, data)
+        model.reload()
+        return redirect(url_for('db.list', _anchor='event-%d' % alarmid))
+    return render_template('add_time_kind.html',
+                           form=form,
+                           kind=kind,
+                           mode='edit',
+                           )
+
+
 @db.route('/add/time/<kind>', methods=['GET', 'POST'])
 def addtime_kind(kind):
     Form, receiver = tuple(forms.get_timeform(kind))
     form = Form()
     if request.method == 'POST' and form.validate():
         data = receiver(form)
-        model = current_app.larigira.controller.monitor.model
-        eid = model.add_alarm(data)
+        eid = get_model().add_alarm(data)
         return redirect(url_for('db.edit_event', alarmid=eid))
 
-    return render_template('add_time_kind.html', form=form, kind=kind)
+    return render_template('add_time_kind.html', form=form, kind=kind, mode='add')
 
 
 @db.route('/add/audio')

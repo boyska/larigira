@@ -17,17 +17,19 @@ $(function() {
 {% block content %}
 <div class="container-fluid">
 	{% for e, actions in events %}
-	<div class="event row">
+	<div class="event row" id="event-{{e.eid}}">
 			<h2>Event {{e.eid}} <small>{{e.nick if 'nick'}}</small> </h2>
 		<div class="col-md-8">
 			<h3>Time</h3>
+			<a class="button" href="{{url_for('db.edit_time', alarmid=e.eid)}}">
+				Change time for this event</a>
 		{{dict_table(e, ['nick', 'actions'])}}
 
 		</div>
 		<div class="actions col-md-4">
 			<h3>Audio</h3>
 			<a class="button" href="{{url_for('db.edit_event', alarmid=e.eid)}}">
-				Change audio for this event</a>
+				Change audios for this event</a>
 			<ol>
 				{% for a in actions %}
 				<li>

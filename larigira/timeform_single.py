@@ -1,4 +1,4 @@
-from __future__ import print_function
+from datetime import datetime
 
 from flask_wtf import Form
 from wtforms import StringField, DateTimeField, validators, SubmitField
@@ -11,6 +11,12 @@ class SingleAlarmForm(Form):
                        description='Date to ring on, expressed as '
                        'YYYY-MM-DD HH:MM:SS')
     submit = SubmitField(u'Submit')
+
+    def populate_from_timespec(self, timespec):
+        if 'nick' in timespec:
+            self.nick.data = timespec['nick']
+        if 'timestamp' in timespec:
+            self.dt.data = datetime.fromtimestamp(timespec['timestamp'])
 
 
 def singlealarm_receive(form):
