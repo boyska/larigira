@@ -20,7 +20,7 @@ def home():
 
 @db.route('/list')
 def list():
-    model = current_app.larigira.monitor.source.model
+    model = current_app.larigira.controller.monitor.model
     alarms = tuple(model.get_all_alarms())
     events = [(alarm, model.get_actions_by_alarm(alarm))
               for alarm in alarms]
@@ -39,7 +39,7 @@ def addtime_kind(kind):
     form = Form()
     if request.method == 'POST' and form.validate():
         data = receiver(form)
-        model = current_app.larigira.monitor.source.model
+        model = current_app.larigira.controller.monitor.model
         eid = model.add_alarm(data)
         return redirect(url_for('db.edit_event', alarmid=eid))
 
@@ -58,7 +58,7 @@ def addaudio_kind(kind):
     form = Form()
     if request.method == 'POST' and form.validate():
         data = receiver(form)
-        model = current_app.larigira.monitor.source.model
+        model = current_app.larigira.controller.monitor.model
         eid = model.add_action(data)
         return jsonify(dict(inserted=eid, data=data))
 
@@ -67,7 +67,7 @@ def addaudio_kind(kind):
 
 @db.route('/edit/event/<alarmid>')
 def edit_event(alarmid):
-    model = current_app.larigira.monitor.source.model
+    model = current_app.larigira.controller.monitor.model
     alarm = model.get_alarm_by_id(int(alarmid))
     if alarm is None:
         abort(404)
@@ -84,7 +84,7 @@ def change_actions(alarmid):
     new_actions = request.form.getlist('actions[]')
     if new_actions is None:
         new_actions = []
-    model = current_app.larigira.monitor.source.model
+    model = current_app.larigira.controller.monitor.model
     ret = model.update_alarm(int(alarmid),
                              new_fields={'actions': [int(a) for a in
                                                      new_actions]})
