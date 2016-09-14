@@ -5,12 +5,12 @@ from wtforms import StringField, DateTimeField, validators, SubmitField
 
 
 class SingleAlarmForm(Form):
-    nick = StringField(u'Alarm nick', validators=[validators.required()],
+    nick = StringField('Alarm nick', validators=[validators.required()],
                        description='A simple name to recognize this alarm')
-    dt = DateTimeField(u'Date and time', validators=[validators.required()],
+    dt = DateTimeField('Date and time', validators=[validators.required()],
                        description='Date to ring on, expressed as '
                        'YYYY-MM-DD HH:MM:SS')
-    submit = SubmitField(u'Submit')
+    submit = SubmitField('Submit')
 
     def populate_from_timespec(self, timespec):
         if 'nick' in timespec:

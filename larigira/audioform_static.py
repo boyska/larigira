@@ -5,11 +5,11 @@ from wtforms import StringField, validators, SubmitField
 
 
 class StaticAudioForm(Form):
-    nick = StringField(u'Audio nick', validators=[validators.required()],
+    nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    path = StringField(u'Path', validators=[validators.required()],
+    path = StringField('Path', validators=[validators.required()],
                        description='Full path to audio file')
-    submit = SubmitField(u'Submit')
+    submit = SubmitField('Submit')
 
     def populate_from_audiospec(self, audiospec):
         if 'nick' in audiospec:

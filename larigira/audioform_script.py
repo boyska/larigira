@@ -3,13 +3,13 @@ from wtforms import StringField, validators, SubmitField, ValidationError
 
 
 class ScriptAudioForm(Form):
-    nick = StringField(u'Audio nick', validators=[validators.required()],
+    nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    name = StringField(u'Name', validators=[validators.required()],
+    name = StringField('Name', validators=[validators.required()],
                        description='filename (NOT path) of the script')
-    args = StringField(u'Arguments',
+    args = StringField('Arguments',
                        description='arguments, separated by spaces')
-    submit = SubmitField(u'Submit')
+    submit = SubmitField('Submit')
 
     def populate_from_audiospec(self, audiospec):
         if 'nick' in audiospec:

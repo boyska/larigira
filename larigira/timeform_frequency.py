@@ -7,21 +7,21 @@ from wtforms import StringField, DateTimeField, validators, \
 
 
 class FrequencyAlarmForm(Form):
-    nick = StringField(u'Alarm nick', validators=[validators.required()],
+    nick = StringField('Alarm nick', validators=[validators.required()],
                        description='A simple name to recognize this alarm')
-    start = DateTimeField(u'Start date and time',
+    start = DateTimeField('Start date and time',
                           validators=[validators.required()],
                           description='Date before which no alarm will ring, '
                           'expressed as YYYY-MM-DD HH:MM:SS')
-    end = DateTimeField(u'End date and time',
+    end = DateTimeField('End date and time',
                         validators=[validators.optional()],
                         description='Date after which no alarm will ring, '
                         'expressed as YYYY-MM-DD HH:MM:SS')
-    interval = StringField(u'Frequency',
+    interval = StringField('Frequency',
                            validators=[validators.required()],
                            description='in seconds, or human-readable '
                            '(like 9w3d12h)')
-    submit = SubmitField(u'Submit')
+    submit = SubmitField('Submit')
 
     def populate_from_timespec(self, timespec):
         if 'nick' in timespec:
