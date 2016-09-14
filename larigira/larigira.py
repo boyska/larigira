@@ -40,7 +40,11 @@ class Larigira(object):
 
 
 def main():
-    os.environ['TMPDIR'] = tempfile.mkdtemp(prefix='larigira')
+    tempfile.tempdir = os.environ['TMPDIR'] = os.path.join(
+        os.getenv('TMPDIR', '/tmp'),
+        'larigira.%d' % os.getuid())
+    if not os.path.isdir(os.environ['TMPDIR']):
+        os.makedirs(os.environ['TMPDIR'])
     log_format = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
     logging.basicConfig(level=logging.DEBUG if get_conf()['DEBUG'] else logging.INFO,
                         format=log_format,
