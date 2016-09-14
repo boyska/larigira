@@ -34,6 +34,7 @@ $(function() {
 				{% for a in actions %}
 				<li>
 					<strong> {{a.nick}} </strong>
+					<small><a class="button" href="{{url_for('db.edit_audio', actionid=a.eid)}}">Edit</a></small>
 					{{dict_table(a, ['nick'])}}
 				</li>
 				{% endfor %}

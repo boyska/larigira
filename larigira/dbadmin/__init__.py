@@ -89,6 +89,27 @@ def addaudio_kind(kind):
     return render_template('add_audio_kind.html', form=form, kind=kind)
 
 
+@db.route('/edit/audio/<int:actionid>', methods=['GET', 'POST'])
+def edit_audio(actionid):
+    model = get_model()
+    audiospec = model.get_action_by_id(actionid)
+    kind = audiospec['kind']
+    Form, receiver = tuple(forms.get_audioform(kind))
+    form = Form()
+    if request.method == 'GET':
+        form.populate_from_audiospec(audiospec)
+    if request.method == 'POST' and form.validate():
+        data = receiver(form)
+        model.update_action(actionid, data)
+        model.reload()
+        return redirect(url_for('db.list'))
+    return render_template('add_audio_kind.html',
+                           form=form,
+                           kind=kind,
+                           mode='edit',
+                           )
+
+
 @db.route('/edit/event/<alarmid>')
 def edit_event(alarmid):
     model = current_app.larigira.controller.monitor.model

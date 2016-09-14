@@ -11,6 +11,12 @@ class StaticAudioForm(Form):
                        description='Full path to audio file')
     submit = SubmitField(u'Submit')
 
+    def populate_from_audiospec(self, audiospec):
+        if 'nick' in audiospec:
+            self.nick.data = audiospec['nick']
+        if 'paths' in audiospec:
+            self.path.data = audiospec['paths'][0]
+
 
 def staticaudio_receive(form):
     return {

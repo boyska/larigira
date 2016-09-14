@@ -62,6 +62,9 @@ class EventModel(object):
     def update_alarm(self, alarmid, new_fields={}):
         return self.alarms.update(new_fields, eids=[alarmid])
 
+    def update_action(self, actionid, new_fields={}):
+        return self.actions.update(new_fields, eids=[actionid])
+
 
 class Monitor(ParentedLet):
     '''

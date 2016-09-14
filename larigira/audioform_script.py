@@ -11,6 +11,14 @@ class ScriptAudioForm(Form):
                        description='arguments, separated by spaces')
     submit = SubmitField(u'Submit')
 
+    def populate_from_audiospec(self, audiospec):
+        if 'nick' in audiospec:
+            self.nick.data = audiospec['nick']
+        if 'name' in audiospec:
+            self.name.data = audiospec['name']
+        if 'args' in audiospec:
+            self.args.data = audiospec['args']
+
     def validate_name(form, field):
         if '/' in field.data:
             raise ValidationError("Name cannot have slashes: "
