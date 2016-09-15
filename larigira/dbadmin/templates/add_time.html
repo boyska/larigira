@@ -6,9 +6,9 @@
 	<h2>Add time specification</h2>
 	Available kinds:
 	<ul>
-		{% for kind in kinds %}
+		{% for kind in kinds|sort %}
 		<li><a href="{{url_for('db.addtime_kind', kind=kind)}}">{{kind}}
-				{% endfor %}
+		{% endfor %}
 	</ul>
 </div>
 {% endblock content %}

@@ -6,7 +6,7 @@
 	<h2>Add audio specification</h2>
 	Available kinds:
 	<ul>
-		{% for kind in kinds %}
+		{% for kind in kinds|sort  %}
 		<li><a href="{{url_for('db.addaudio_kind', kind=kind)}}">{{kind}}
 				{% endfor %}
 	</ul>
