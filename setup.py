@@ -77,10 +77,12 @@ setup(name='larigira',
           'larigira.audioform_create': [
               'static = larigira.audioform_static:StaticAudioForm',
               'script = larigira.audioform_script:ScriptAudioForm',
+              'randomdir = larigira.audioform_randomdir:Form',
           ],
           'larigira.audioform_receive': [
               'static = larigira.audioform_static:staticaudio_receive',
               'script = larigira.audioform_script:scriptaudio_receive',
+              'randomdir = larigira.audioform_randomdir:receive',
           ],
       },
       classifiers=[
