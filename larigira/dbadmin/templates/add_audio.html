@@ -7,8 +7,10 @@
 	Available kinds:
 	<ul>
 		{% for kind in kinds|sort  %}
-		<li><a href="{{url_for('db.addaudio_kind', kind=kind)}}">{{kind}}
-				{% endfor %}
+		<li><a href="{{url_for('db.addaudio_kind', kind=kind)}}">{{kind}}</a>
+			- {{info[kind]['description']}}
+		</li>
+		{% endfor %}
 	</ul>
 </div>
 {% endblock content %}

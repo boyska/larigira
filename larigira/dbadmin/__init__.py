@@ -9,6 +9,8 @@ from flask import current_app, Blueprint, render_template, jsonify, abort, \
     request, redirect, url_for
 
 from larigira.entrypoints_utils import get_avail_entrypoints
+from larigira.audiogen import get_audiogenerator
+from larigira.timegen import get_timegenerator
 from larigira import forms
 db = Blueprint('db', __name__, url_prefix='/db', template_folder='templates')
 
@@ -34,7 +36,12 @@ def list():
 @db.route('/add/time')
 def addtime():
     kinds = get_avail_entrypoints('larigira.timeform_create')
-    return render_template('add_time.html', kinds=kinds)
+
+    def gen_info(gen):
+        return dict(description=getattr(gen, 'description', ''))
+    info = {kind: gen_info(get_timegenerator(kind))
+            for kind in kinds}
+    return render_template('add_time.html', kinds=kinds, info=info)
 
 
 @db.route('/edit/time/<int:alarmid>', methods=['GET', 'POST'])
@@ -67,13 +74,19 @@ def addtime_kind(kind):
         eid = get_model().add_alarm(data)
         return redirect(url_for('db.edit_event', alarmid=eid))
 
-    return render_template('add_time_kind.html', form=form, kind=kind, mode='add')
+    return render_template('add_time_kind.html',
+                           form=form, kind=kind, mode='add')
 
 
 @db.route('/add/audio')
 def addaudio():
     kinds = get_avail_entrypoints('larigira.audioform_create')
-    return render_template('add_audio.html', kinds=kinds)
+
+    def gen_info(gen):
+        return dict(description=getattr(gen, 'description', ''))
+    info = {kind: gen_info(get_audiogenerator(kind))
+            for kind in kinds}
+    return render_template('add_audio.html', kinds=kinds, info=info)
 
 
 @db.route('/add/audio/<kind>', methods=['GET', 'POST'])

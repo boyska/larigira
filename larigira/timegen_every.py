@@ -41,6 +41,7 @@ class SingleAlarm(Alarm):
     '''
     rings a single time
     '''
+    description = 'Only once, at a specified date and time'
 
     def __init__(self, obj):
         self.dt = getdate(obj['timestamp'])
@@ -63,6 +64,7 @@ class FrequencyAlarm(Alarm):
     '''
     rings on {t | exists a k integer >= 0 s.t. t = start+k*t, start<t<end}
     '''
+    description = 'Events at a specified frequency. Example: every 30minutes'
 
     def __init__(self, obj):
         self.start = getdate(obj['start'])

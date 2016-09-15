@@ -47,3 +47,5 @@ def generate(spec):
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
         yield 'file://{}'.format(tmp[1])
+
+generate.description = 'Picks random files from a specified directory'

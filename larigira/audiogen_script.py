@@ -70,3 +70,4 @@ def generate(spec):
     out = [p for p in out.split('\n') if p]
     logging.debug('Script %s produced %d files' % (spec['name'], len(out)))
     return out
+generate.description = 'Generate audio through an external script. Experts only.'

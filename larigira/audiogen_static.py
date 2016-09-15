@@ -22,3 +22,4 @@ def generate(spec):
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
         yield 'file://{}'.format(tmp[1])
+generate.description = 'Picks always the same specified file'
