@@ -12,3 +12,4 @@ larigira.db_*
 *.db
 doc/source/api/larigira.rst
 .eggs/
+.cache/
