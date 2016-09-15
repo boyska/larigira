@@ -51,7 +51,7 @@ def frequencyalarm_receive(form):
         'interval': form.interval.data,
     }
     if form.start.data:
-        obj['start'] = int(form.end.data.strftime('%s'))
+        obj['start'] = int(form.start.data.strftime('%s'))
     else:
         obj['start'] = 0
     if form.end.data:
