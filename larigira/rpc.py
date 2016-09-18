@@ -1,10 +1,10 @@
-from __future__ import print_function
 import logging
 import gc
 from copy import deepcopy
 
 from greenlet import greenlet
-from flask import current_app, Blueprint, Flask, jsonify, render_template
+from flask import current_app, Blueprint, Flask, jsonify, render_template, \
+        request, abort
 from flask_bootstrap import Bootstrap
 
 from .dbadmin import db
@@ -40,6 +40,31 @@ def rpc_index():
 def rpc_refresh():
     send_to_parent('refresh')
     return jsonify(dict(status='ok'))
+
+
+@rpc.route('/audiospec', methods=['GET'])
+def get_audiospec():
+    return jsonify(current_app.larigira.controller.player.continous_audiospec)
+
+
+@rpc.route('/audiospec', methods=['PUT'])
+def change_audiospec():
+    player = current_app.larigira.controller.player
+    if request.json is None:
+        abort(400, "Must send application/json data")
+    if 'spec' not in request.json or type(request.json['spec']) is not dict:
+        abort(400, "Object must have a key 'spec' whose value is an object")
+    player.continous_audiospec = request.json['spec']
+    if 'kind' not in request.json['spec']:
+        abort(400, "invalid audiospec")
+    return jsonify(player.continous_audiospec)
+
+
+@rpc.route('/audiospec', methods=['DELETE'])
+def reset_audiospec():
+    player = current_app.larigira.controller.player
+    player.continous_audiospec = None
+    return jsonify(player.continous_audiospec)
 
 
 def get_scheduled_audiogen():

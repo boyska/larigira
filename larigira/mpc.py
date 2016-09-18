@@ -50,11 +50,21 @@ class Player:
         self.conf = conf
         self.log = logging.getLogger(self.__class__.__name__)
         self.min_playlist_length = 10
+        self._continous_audiospec = self.conf['CONTINOUS_AUDIOSPEC']
 
     def _get_mpd(self):
         mpd_client = MPDClient(use_unicode=True)
         mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
         return mpd_client
+
+    @property
+    def continous_audiospec(self):
+        return self._continous_audiospec
+
+    @continous_audiospec.setter
+    def continous_audiospec(self, spec):
+        self._continous_audiospec = self.conf['CONTINOUS_AUDIOSPEC'] \
+                if spec is None else spec
 
     def check_playlist(self):
         mpd_client = self._get_mpd()
@@ -65,7 +75,7 @@ class Player:
             return
         self.log.info('need to add new songs')
         picker = gevent.Greenlet(audiogenerate,
-                                 self.conf['CONTINOUS_AUDIOSPEC'])
+                                 self.continous_audiospec)
 
         def add(greenlet):
             uris = greenlet.value
