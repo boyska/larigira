@@ -13,7 +13,7 @@ def get_conf(prefix='LARIGIRA_'):
     '''This is where everyone should get configuration from'''
     conf_dir = BaseDirectory.save_config_path('larigira')
     conf = {}
-    conf['CONTINOUS_AUDIODESC'] = dict(kind='mpd', howmany=1)
+    conf['CONTINOUS_AUDIOSPEC'] = dict(kind='mpd', howmany=1)
     conf['MPD_HOST'] = os.getenv('MPD_HOST', 'localhost')
     conf['MPD_PORT'] = int(os.getenv('MPD_PORT', '6600'))
     conf['CACHING_TIME'] = 10

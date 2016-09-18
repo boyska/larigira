@@ -65,7 +65,7 @@ class Player:
             return
         self.log.info('need to add new songs')
         picker = gevent.Greenlet(audiogenerate,
-                                 self.conf['CONTINOUS_AUDIODESC'])
+                                 self.conf['CONTINOUS_AUDIOSPEC'])
 
         def add(greenlet):
             uris = greenlet.value
