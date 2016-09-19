@@ -30,19 +30,27 @@ class MpcWatcher(ParentedLet):
         self.client = get_mpd_client(self.conf)
 
     def do_business(self):
+        first_after_connection = True
         while True:
             try:
                 if self.client is None:
                     self.refresh_client()
+                if first_after_connection:
+                    yield('mpc', 'connect')
 
-                self.log.info('idling')
                 status = self.client.idle()[0]
-            except ConnectionError:
+            except (ConnectionError, ConnectionRefusedError,
+                    FileNotFoundError) as exc:
                 # TODO: should we emit an error just in case?
+                self.log.debug('connection with MPD failed ({}: {})'.
+                               format(exc.__class__.__name__, exc))
                 self.client = None
+                first_after_connection = True
+                gevent.sleep(1)
                 continue
-            self.log.info(status)
-            yield ('mpc', status)
+            else:
+                first_after_connection = False
+                yield ('mpc', status)
 
 
 class Player:
@@ -135,9 +143,13 @@ class Controller(gevent.Greenlet):
             kind = value['kind']
             args = value['args']
             if kind == 'timer' or (kind == 'mpc' and
-                                   args[0] in ('player', 'playlist')):
+                                   args[0] in ('player', 'playlist',
+                                               'connect')):
                 gevent.Greenlet.spawn(self.player.check_playlist)
-                self.tmpcleaner.check_playlist()
+                try:
+                    self.tmpcleaner.check_playlist()
+                except:
+                    pass
             elif kind == 'mpc':
                 pass
             elif kind == 'uris_enqueue':
