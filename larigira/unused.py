@@ -27,7 +27,7 @@ class UnusedCleaner:
         as soon as it leaves the mpc playlist, it is removed
         '''
         if not uri.startswith('file:///'):
-            raise ValueError('not a file URI')
+            return  # not a file URI
         fpath = uri[len('file://'):]
         if not os.path.exists(fpath):
             self.log.warning('a path that does not exist is being monitored')

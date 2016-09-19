@@ -58,6 +58,7 @@ class Player:
         self.conf = conf
         self.log = logging.getLogger(self.__class__.__name__)
         self.min_playlist_length = 10
+        self.tmpcleaner = UnusedCleaner(conf)
         self._continous_audiospec = self.conf['CONTINOUS_AUDIOSPEC']
 
     def _get_mpd(self):
@@ -89,6 +90,7 @@ class Player:
             uris = greenlet.value
             for uri in uris:
                 assert type(uri) is str, type(uri)
+                self.tmpcleaner.watch(uri.strip())
                 mpd_client.add(uri.strip())
         picker.link_value(add)
         picker.start()
@@ -109,6 +111,7 @@ class Player:
                 mpd_client.addid(uri, insert_pos)
             except CommandError:
                 self.log.exception("Cannot insert song {}".format(uri))
+            self.tmpcleaner.watch(uri.strip())
 
 
 class Controller(gevent.Greenlet):
@@ -118,7 +121,6 @@ class Controller(gevent.Greenlet):
         self.conf = conf
         self.q = Queue()
         self.player = Player(self.conf)
-        self.tmpcleaner = UnusedCleaner(conf)
         if 'DB_URI' in self.conf:
             self.monitor = Monitor(self.q, self.conf)
             self.monitor.parent_greenlet = self
@@ -147,7 +149,7 @@ class Controller(gevent.Greenlet):
                                                'connect')):
                 gevent.Greenlet.spawn(self.player.check_playlist)
                 try:
-                    self.tmpcleaner.check_playlist()
+                    self.player.tmpcleaner.check_playlist()
                 except:
                     pass
             elif kind == 'mpc':
@@ -160,9 +162,6 @@ class Controller(gevent.Greenlet):
                 except Exception:
                     self.log.exception("Error while adding to queue; "
                                        "bad audiogen output?")
-                else:
-                    for fname in args[0]['uris']:
-                        self.tmpcleaner.watch(fname)
             elif (kind == 'signal' and args[0] == signal.SIGALRM) or \
                     kind == 'refresh':
                 # it's a tick!
