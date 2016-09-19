@@ -75,6 +75,16 @@ class Player:
         self._continous_audiospec = self.conf['CONTINOUS_AUDIOSPEC'] \
                 if spec is None else spec
 
+        def clear_everything_but_current_song():
+            mpd = self._get_mpd()
+            current = mpd.currentsong()
+            pos = int(current.get('pos', 0))
+            for song in mpd.playlistid():
+                if int(song['pos']) != pos:
+                    mpd.deleteid(song['id'])
+
+        gevent.Greenlet.spawn(clear_everything_but_current_song)
+
     def check_playlist(self):
         mpd_client = self._get_mpd()
         songs = mpd_client.playlist()
