@@ -60,6 +60,7 @@ class Player:
         self.min_playlist_length = 10
         self.tmpcleaner = UnusedCleaner(conf)
         self._continous_audiospec = self.conf['CONTINOUS_AUDIOSPEC']
+        self.events_enabled = True
 
     def _get_mpd(self):
         mpd_client = MPDClient(use_unicode=True)
@@ -106,10 +107,15 @@ class Player:
         picker.start()
 
     def enqueue(self, songs):
-        mpd_client = self._get_mpd()
         assert type(songs) is dict
         assert 'uris' in songs
         spec = [aspec.get('nick', aspec.eid) for aspec in songs['audiospecs']]
+        if not self.events_enabled:
+            self.log.debug('Ignoring <{}> (events disabled)'.format(
+                ','.join(spec)
+            ))
+            return
+        mpd_client = self._get_mpd()
         for uri in reversed(songs['uris']):
             assert type(uri) is str
             self.log.info('Adding {} to playlist (from <{}>:{}={})'.

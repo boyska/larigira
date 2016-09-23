@@ -67,6 +67,30 @@ def reset_audiospec():
     return jsonify(player.continous_audiospec)
 
 
+@rpc.route('/eventsenabled/toggle', methods=['POST'])
+def toggle_events_enabled():
+    status = current_app.larigira.controller.player.events_enabled
+    current_app.larigira.controller.player.events_enabled = not status
+    return jsonify(dict(events_enabled=not status))
+
+
+@rpc.route('/eventsenabled', methods=['GET'])
+def get_events_enabled():
+    status = current_app.larigira.controller.player.events_enabled
+    return jsonify(dict(events_enabled=status))
+
+
+@rpc.route('/eventsenabled', methods=['PUT'])
+def set_events_enabled():
+    player = current_app.larigira.controller.player
+    if request.json is None:
+        abort(400, "Must send application/json data")
+    if type(request.json) is not bool:
+        abort(400, "Content must be a JSON boolean")
+    player.events_enabled = request.json
+    return jsonify(dict(events_enabled=request.json))
+
+
 def get_scheduled_audiogen():
     larigira = current_app.larigira
     running = larigira.controller.monitor.running
