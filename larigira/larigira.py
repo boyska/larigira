@@ -12,6 +12,7 @@ import signal
 from time import sleep
 import logging
 import logging.config
+import subprocess
 
 import gevent
 from gevent.wsgi import WSGIServer
@@ -40,6 +41,19 @@ class Larigira(object):
         self.http_server.start()
 
 
+def sd_notify(ready=False, status=None):
+    args = ['systemd-notify']
+    if ready:
+        args.append('--ready')
+    if status is not None:
+        args.append('--status')
+        args.append(status)
+    try:
+        subprocess.check_call(args)
+    except:
+        pass
+
+
 def main():
     tempfile.tempdir = os.environ['TMPDIR'] = os.path.join(
         os.getenv('TMPDIR', '/tmp'),
@@ -60,9 +74,11 @@ def main():
                 get_mpd_client(get_conf())
             except Exception:
                 logging.debug("Could not connect to MPD, waiting")
+                sd_notify(status='Waiting MPD connection')
                 sleep(int(get_conf()['MPD_WAIT_START_RETRYSECS']))
             else:
                 logging.info("MPD ready!")
+                sd_notify(ready=True, status='Ready')
                 break
 
 
