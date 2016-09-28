@@ -41,12 +41,11 @@ class MpcWatcher(ParentedLet):
                 status = self.client.idle()[0]
             except (ConnectionError, ConnectionRefusedError,
                     FileNotFoundError) as exc:
-                # TODO: should we emit an error just in case?
-                self.log.debug('connection with MPD failed ({}: {})'.
-                               format(exc.__class__.__name__, exc))
+                self.log.warning('Connection to MPD failed ({}: {})'.
+                                 format(exc.__class__.__name__, exc))
                 self.client = None
                 first_after_connection = True
-                gevent.sleep(1)
+                gevent.sleep(5)
                 continue
             else:
                 first_after_connection = False
@@ -64,7 +63,13 @@ class Player:
 
     def _get_mpd(self):
         mpd_client = MPDClient(use_unicode=True)
-        mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
+        try:
+            mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
+        except (ConnectionError, ConnectionRefusedError,
+                FileNotFoundError) as exc:
+            self.log.warning('Connection to MPD failed ({}: {})'.
+                             format(exc.__class__.__name__, exc))
+            raise gevent.GreenletExit()
         return mpd_client
 
     @property
