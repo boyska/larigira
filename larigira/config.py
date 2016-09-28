@@ -26,6 +26,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['CHECK_SECS'] = 20   # period for checking playlist length
     conf['EVENT_TICK_SECS'] = 30  # period for scheduling events
     conf['DEBUG'] = False
+    conf['LOG_CONFIG'] = False
     conf.update(from_envvars(prefix=prefix))
     return conf
 

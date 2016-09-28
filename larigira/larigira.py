@@ -11,6 +11,7 @@ import tempfile
 import signal
 from time import sleep
 import logging
+import logging.config
 
 import gevent
 from gevent.wsgi import WSGIServer
@@ -45,10 +46,14 @@ def main():
         'larigira.%d' % os.getuid())
     if not os.path.isdir(os.environ['TMPDIR']):
         os.makedirs(os.environ['TMPDIR'])
-    log_format = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
-    logging.basicConfig(level=logging.DEBUG if get_conf()['DEBUG'] else logging.INFO,
-                        format=log_format,
-                        datefmt='%H:%M:%S')
+    if get_conf()['LOG_CONFIG']:
+        logging.config.fileConfig(get_conf()['LOG_CONFIG'],
+                                  disable_existing_loggers=True)
+    else:
+        log_format = '%(asctime)s|%(levelname)s[%(name)s:%(lineno)d] %(message)s'
+        logging.basicConfig(level=logging.DEBUG if get_conf()['DEBUG'] else logging.INFO,
+                            format=log_format,
+                            datefmt='%H:%M:%S')
     if(get_conf()['MPD_WAIT_START']):
         while True:
             try:
