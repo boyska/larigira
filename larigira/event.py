@@ -35,7 +35,9 @@ class EventModel(object):
 
     def get_actions_by_alarm(self, alarm):
         for action_id in alarm.get('actions', []):
-            yield self.get_action_by_id(action_id)
+            action = self.get_action_by_id(action_id)
+            if action is None: continue
+            yield action
 
     def get_all_alarms(self):
         return self.alarms.all()
