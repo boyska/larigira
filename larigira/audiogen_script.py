@@ -27,11 +27,13 @@ def generate(spec):
     '''
     Recognized arguments (fields in spec):
         - name [mandatory]            script name
-        - args [default=empty]   arguments, space-separated
+        - args [default=empty]   arguments, colon-separated
     '''
     conf = get_conf()
     spec.setdefault('args', '')
-    args = spec['args'].split()
+    if type(spec['args']) is str:
+        args = spec['args'].split(';')
+    args = list(spec['args'])
     for attr in ('name', ):
         if attr not in spec:
             raise ValueError("Malformed audiospec: missing '%s'" % attr)
@@ -44,6 +46,7 @@ def generate(spec):
         raise ValueError("Script %s not found", spec['name'])
     if not os.access(scriptpath, os.R_OK | os.X_OK):
         raise ValueError("Insufficient privileges for script %s" % scriptpath)
+
     if os.stat(scriptpath).st_uid != os.getuid():
         raise ValueError("Script %s owned by %d, should be owned by %d"
                          % (spec['name'], os.stat(scriptpath).st_uid,
@@ -70,4 +73,5 @@ def generate(spec):
     out = [p for p in out.split('\n') if p]
     logging.debug('Script %s produced %d files' % (spec['name'], len(out)))
     return out
-generate.description = 'Generate audio through an external script. Experts only.'
+generate.description = 'Generate audio through an external script. ' \
+'Experts only.'

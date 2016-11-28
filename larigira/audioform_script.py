@@ -8,7 +8,7 @@ class ScriptAudioForm(Form):
     name = StringField('Name', validators=[validators.required()],
                        description='filename (NOT path) of the script')
     args = StringField('Arguments',
-                       description='arguments, separated by spaces')
+                       description='arguments, separated by ";"')
     submit = SubmitField('Submit')
 
     def populate_from_audiospec(self, audiospec):
@@ -17,7 +17,10 @@ class ScriptAudioForm(Form):
         if 'name' in audiospec:
             self.name.data = audiospec['name']
         if 'args' in audiospec:
-            self.args.data = audiospec['args']
+            if type(audiospec['args']) is str:  # legacy compatibility
+                self.args.data = audiospec['args'].replace(' ', ';')
+            else:
+                self.args.data = ';'.join(audiospec['args'])
 
     def validate_name(form, field):
         if '/' in field.data:
@@ -30,5 +33,5 @@ def scriptaudio_receive(form):
         'kind': 'script',
         'nick': form.nick.data,
         'name': form.name.data,
-        'args': form.args.data
+        'args': form.args.data.split(';')
     }
