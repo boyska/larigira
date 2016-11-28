@@ -19,7 +19,7 @@ Architecture
 
 larigira delegates all the music playing business to MPD.
 It relies on ``tinydb`` as a db: it's actually just a json file, to achieve
-simplicity and flexibility.
+simplicity and flexibility. By default it is stored in ``~/.config/larigira/db.json``
 
 Code structure and core concepts
 -----------------------------------
