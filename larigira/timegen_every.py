@@ -24,6 +24,7 @@ class Alarm(object):
         raise NotImplementedError()
 
     def has_ring(self, time=None):
+        '''returns True IFF the alarm will ring exactly at ``time``'''
         raise NotImplementedError()
 
     def all_rings(self, current_time=None):
@@ -74,6 +75,8 @@ class FrequencyAlarm(Alarm):
             self.interval = timeparse(obj['interval'])
         assert type(self.interval) is int
         self.end = getdate(obj['end']) if 'end' in obj else None
+        self.weekdays = [int(x) for x in obj['weekdays']] if \
+            'weekdays' in obj else None
 
     def next_ring(self, current_time=None):
         '''if current_time is None, it is now()'''
@@ -87,15 +90,27 @@ class FrequencyAlarm(Alarm):
             assert self.start <= current_time <= self.end
         else:
             assert self.start <= current_time
-        n_interval = (
-            (current_time - self.start).total_seconds() // self.interval
-            ) + 1
-        ring = self.start + timedelta(seconds=self.interval * n_interval)
-        if ring == current_time:
-            ring += timedelta(seconds=self.interval)
-        if self.end is not None and ring > self.end:
-            return None
-        return ring
+        # this "infinite" loop is required by the weekday exclusion: in
+        # fact, it is necessary to retry until a valid event/weekday is
+        # found. a "while True" might have been more elegant (and maybe
+        # fast), but this gives a clear upper bound to the cycle.
+        for _ in range(60*60*24*7 // self.interval):
+            n_interval = (
+                (current_time - self.start).total_seconds() // self.interval
+                ) + 1
+            ring = self.start + timedelta(seconds=self.interval * n_interval)
+            if ring == current_time:
+                ring += timedelta(seconds=self.interval)
+            if self.end is not None and ring > self.end:
+                return None
+            if self.weekdays is not None \
+               and ring.isoweekday() not in self.weekdays:
+                current_time = ring
+                continue
+            return ring
+        log.warning("Can't find a valid time for event; "
+                    "something went wrong")
+        return None
 
     def has_ring(self, current_time=None):
         if current_time is None:

@@ -30,6 +30,15 @@ def onehour(now, request):
         'interval': intervals[request.param],
         'end': now + days(1)})
 
+@pytest.fixture(params=[1, '1'])
+def onehour_monday(request):
+    monday = request.param
+    yield FrequencyAlarm({
+        'interval': 3600*12,
+        'weekdays': [monday],  # mondays only
+        'start': 0
+    })
+
 
 @pytest.fixture(params=['seconds', 'human', 'coloned'])
 def tenseconds(now, request):
@@ -109,6 +118,14 @@ def test_freq_ring(now, onehour):
     allr = tuple(f.all_rings(now - days(20)))
     eq_(f.next_ring(now - days(20)), now - days(1))
     eq_(len(allr), 49, pprint(allr))
+
+
+def test_weekday_skip(onehour_monday):
+    t = datetime.fromtimestamp(0)
+    for _ in range(20):  # 20 is an arbitrary number
+        t = onehour_monday.next_ring(t)
+        print(_, t, t.isoweekday())
+        assert t.isoweekday() == 1  # monday; don't get confused by .weekday()
 
 
 def test_single_registered():
