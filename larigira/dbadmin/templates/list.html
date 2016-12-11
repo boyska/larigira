@@ -16,6 +16,9 @@ $(function() {
 
 {% block content %}
 <div class="container-fluid">
+<button data-target=".option-table" class="btn btn-default"
+		aria-expanded="false" type="button"
+		data-toggle="collapse">Expand/collapse everything</button>
 	{% for e, actions in events %}
 	<div class="event row" id="event-{{e.eid}}">
 			<h2>Event {{e.eid}} <small>{{e.nick if 'nick'}}</small> </h2>
