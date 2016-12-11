@@ -29,6 +29,10 @@ class UnusedCleaner:
         if not uri.startswith('file:///'):
             return  # not a file URI
         fpath = uri[len('file://'):]
+        if 'TMPDIR' in os.environ and os.environ['TMPDIR'] \
+           and not fpath.startswith(self.conf['TMPDIR']):
+            self.log.info('Not watching file {}: not in TMPDIR'.format(fpath))
+            return
         if not os.path.exists(fpath):
             self.log.warning('a path that does not exist is being monitored')
         self.waiting_removal_files.add(fpath)
