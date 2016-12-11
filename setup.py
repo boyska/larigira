@@ -29,7 +29,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 setup(name='larigira',
-      version='0.4.2',
+      version='1.0b1',
       description='A radio automation based on MPD',
       long_description=read('README.rst'),
       author='boyska',
