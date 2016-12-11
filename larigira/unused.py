@@ -5,7 +5,7 @@ This component will look for files to be removed. There are some assumptions:
     * MPD URIs are parsed, and only file:/// is supported
 '''
 import os
-import os.path
+from os.path import commonpath, normpath
 import logging
 import mpd
 
@@ -30,8 +30,9 @@ class UnusedCleaner:
         if not uri.startswith('file:///'):
             return  # not a file URI
         fpath = uri[len('file://'):]
-        if 'TMPDIR' in os.environ and os.environ['TMPDIR'] \
-           and not os.path.commonpath([os.environ['TMPDIR'], fpath]) == os.path.normpath(os.environ['TMPDIR']):
+        if 'TMPDIR' in self.conf and self.conf['TMPDIR'] \
+           and commonpath([self.conf['TMPDIR'], fpath]) != \
+           normpath(self.conf['TMPDIR']):
             self.log.info('Not watching file {}: not in TMPDIR'.format(fpath))
             return
         if not os.path.exists(fpath):

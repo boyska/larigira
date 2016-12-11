@@ -27,6 +27,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['EVENT_TICK_SECS'] = 30  # period for scheduling events
     conf['DEBUG'] = False
     conf['LOG_CONFIG'] = False
+    conf['TMPDIR'] = os.getenv('TMPDIR', '/tmp/')
     conf.update(from_envvars(prefix=prefix))
     return conf
 
