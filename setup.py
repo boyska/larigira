@@ -47,7 +47,7 @@ setup(name='larigira',
           'pytimeparse',
           'tinydb'
       ],
-      tests_require=['pytest', 'pytest-timeout'],
+      tests_require=['pytest-timeout==1.0', 'py>=1.4.29', 'pytest==3.0', ],
       cmdclass={'test': PyTest},
       zip_safe=False,
       include_package_data=True,
