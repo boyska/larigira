@@ -2,6 +2,15 @@
 larigira
 =========
 
+.. image:: https://travis-ci.org/boyska/larigira.svg?branch=master
+    :target: https://travis-ci.org/boyska/larigira
+    :alt: Build status
+
+.. image:: https://img.shields.io/pypi/v/larigira.svg
+    :target: https://pypi.python.org/pypi/larigira
+    :alt: Latest Version
+
+
 About
 -------
 
@@ -13,7 +22,7 @@ Software stack
 ---------------
 
 * MPD, of course
-* python3
+* python3.5 or greater
 
   - gevent as an async framework
   - flask to provide web interface and rpc
