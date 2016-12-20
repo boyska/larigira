@@ -77,6 +77,11 @@ class FrequencyAlarm(Alarm):
         self.end = getdate(obj['end']) if 'end' in obj else None
         self.weekdays = [int(x) for x in obj['weekdays']] if \
             'weekdays' in obj else None
+        if self.weekdays is not None:
+            for weekday in self.weekdays:
+                if not 1 <= weekday <= 7:
+                    raise ValueError('Not a valid weekday: {}'
+                                     .format(weekday))
 
     def next_ring(self, current_time=None):
         '''if current_time is None, it is now()'''

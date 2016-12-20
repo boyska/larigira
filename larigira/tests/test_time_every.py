@@ -30,12 +30,23 @@ def onehour(now, request):
         'interval': intervals[request.param],
         'end': now + days(1)})
 
+
 @pytest.fixture(params=[1, '1'])
 def onehour_monday(request):
-    monday = request.param
+    weekday = request.param
     yield FrequencyAlarm({
         'interval': 3600*12,
-        'weekdays': [monday],  # mondays only
+        'weekdays': [weekday],
+        'start': 0
+    })
+
+
+@pytest.fixture(params=[7, '7'])
+def onehour_sunday(request):
+    weekday = request.param
+    yield FrequencyAlarm({
+        'interval': 3600*12,
+        'weekdays': [weekday],
         'start': 0
     })
 
@@ -124,8 +135,24 @@ def test_weekday_skip(onehour_monday):
     t = datetime.fromtimestamp(0)
     for _ in range(20):  # 20 is an arbitrary number
         t = onehour_monday.next_ring(t)
-        print(_, t, t.isoweekday())
         assert t.isoweekday() == 1  # monday; don't get confused by .weekday()
+
+
+def test_weekday_skip_2(onehour_sunday):
+    t = datetime.fromtimestamp(0)
+    for _ in range(20):  # 20 is an arbitrary number
+        t = onehour_sunday.next_ring(t)
+        assert t.isoweekday() == 7  # monday; don't get confused by .weekday()
+
+
+def test_sunday_is_not_0():
+    with pytest.raises(ValueError) as excinfo:
+        FrequencyAlarm({
+                'interval': 3600*12,
+                'weekdays': [0],
+                'start': 0
+            })
+    assert 'Not a valid weekday:' in excinfo.value.args[0]
 
 
 def test_single_registered():
