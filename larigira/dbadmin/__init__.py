@@ -49,7 +49,7 @@ def home():
 
 
 @db.route('/list')
-def list():
+def events_list():
     model = current_app.larigira.controller.monitor.model
     alarms = tuple(model.get_all_alarms())
     events = [(alarm, model.get_actions_by_alarm(alarm))
