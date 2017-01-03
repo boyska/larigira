@@ -68,12 +68,12 @@ setup(name='larigira',
               'single = larigira.timegen_every:SingleAlarm',
           ],
           'larigira.timeform_create': [
-              'single = larigira.timeform_single:SingleAlarmForm',
-              'frequency = larigira.timeform_frequency:FrequencyAlarmForm',
+              'single = larigira.timeform_base:SingleAlarmForm',
+              'frequency = larigira.timeform_base:FrequencyAlarmForm',
           ],
           'larigira.timeform_receive': [
-              'single = larigira.timeform_single:singlealarm_receive',
-              'frequency = larigira.timeform_frequency:frequencyalarm_receive',
+              'single = larigira.timeform_base:singlealarm_receive',
+              'frequency = larigira.timeform_base:frequencyalarm_receive',
           ],
           'larigira.audioform_create': [
               'static = larigira.audioform_static:StaticAudioForm',
