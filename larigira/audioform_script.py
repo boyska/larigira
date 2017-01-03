@@ -1,12 +1,15 @@
 from flask_wtf import Form
 from wtforms import StringField, validators, SubmitField, ValidationError
 
+from larigira.formutils import AutocompleteStringField
 
 class ScriptAudioForm(Form):
     nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    name = StringField('Name', validators=[validators.required()],
-                       description='filename (NOT path) of the script')
+    name = AutocompleteStringField(
+        'dl-suggested-scripts',
+        'Name', validators=[validators.required()],
+        description='filename (NOT path) of the script')
     args = StringField('Arguments',
                        description='arguments, separated by ";"')
     submit = SubmitField('Submit')

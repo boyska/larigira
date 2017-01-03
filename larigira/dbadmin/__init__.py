@@ -56,6 +56,13 @@ def get_suggested_dirs():
     return list(dirset)
 
 
+def get_suggested_scripts():
+    base = get_conf()['SCRIPTS_PATH']
+    fnames = [f for f in os.listdir(base)
+              if os.access(os.path.join(base, f), os.R_OK | os.X_OK)]
+    return fnames
+
+
 def get_suggestions():
     files = get_suggested_files()
     if len(files) > 200:
@@ -63,7 +70,9 @@ def get_suggestions():
         files = files[:200]
     return dict(
         files=files,
-        dirs=get_suggested_dirs())
+        dirs=get_suggested_dirs(),
+        scripts=get_suggested_scripts(),
+    )
 
 
 @db.route('/')
