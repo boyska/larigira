@@ -28,6 +28,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['DEBUG'] = False
     conf['LOG_CONFIG'] = False
     conf['TMPDIR'] = os.getenv('TMPDIR', '/tmp/')
+    conf['FILE_PATH_SUGGESTION'] = ()  # tuple of paths
     conf.update(from_envvars(prefix=prefix))
     return conf
 

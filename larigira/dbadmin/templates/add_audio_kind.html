@@ -10,6 +10,11 @@
 	resubmit
 </div>
 {% endif %}
+<datalist id="dl-suggested-files">
+	{% for fname in suggested_files %}
+		<option value="{{fname}}">
+	{% endfor %}
+</datalist>
 <div class="container-fluid">
 	{{wtf.quick_form(form)}}
 </div>

@@ -5,6 +5,8 @@ Templates are self-contained in this directory
 '''
 from __future__ import print_function
 
+import os
+
 from flask import current_app, Blueprint, render_template, jsonify, abort, \
     request, redirect, url_for
 
@@ -12,11 +14,33 @@ from larigira.entrypoints_utils import get_avail_entrypoints
 from larigira.audiogen import get_audiogenerator
 from larigira.timegen import get_timegenerator
 from larigira import forms
+from larigira.config import get_conf
+from larigira.fsutils import scan_dir_audio
 db = Blueprint('db', __name__, url_prefix='/db', template_folder='templates')
 
 
 def get_model():
     return current_app.larigira.controller.monitor.model
+
+
+def get_suggested_files():
+    if not get_conf()['FILE_PATH_SUGGESTION']:
+        return []
+    if current_app.cache.has('dbadmin.get_suggested_files'):
+        return current_app.cache.get('dbadmin.get_suggested_files')
+    current_app.logger.debug('get_suggested_files MISS in cache')
+    files = []
+    for path in get_conf()['FILE_PATH_SUGGESTION']:
+        if not os.path.isdir(path):
+            current_app.logger.warn('Invalid suggestion path: %s' % path)
+            continue
+        pathfiles = scan_dir_audio(path)
+        files.extend(pathfiles)
+    current_app.logger.debug('Suggested files: %s' % ', '.join(files))
+
+    current_app.cache.set('dbadmin.get_suggested_files', files,
+                          timeout=600)  # ten minutes
+    return files
 
 
 @db.route('/')
@@ -99,7 +123,8 @@ def addaudio_kind(kind):
         eid = model.add_action(data)
         return jsonify(dict(inserted=eid, data=data))
 
-    return render_template('add_audio_kind.html', form=form, kind=kind)
+    return render_template('add_audio_kind.html', form=form, kind=kind,
+                          suggested_files=get_suggested_files())
 
 
 @db.route('/edit/audio/<int:actionid>', methods=['GET', 'POST'])
@@ -120,6 +145,7 @@ def edit_audio(actionid):
                            form=form,
                            kind=kind,
                            mode='edit',
+                           suggested_files=get_suggested_files()
                            )
 
 

@@ -6,6 +6,7 @@ from greenlet import greenlet
 from flask import current_app, Blueprint, Flask, jsonify, render_template, \
         request, abort
 from flask_bootstrap import Bootstrap
+from werkzeug.contrib.cache import SimpleCache
 
 from .dbadmin import db
 from .config import get_conf
@@ -179,4 +180,5 @@ def create_app(queue, larigira):
     app.register_blueprint(db)
     app.queue = queue
     app.larigira = larigira
+    app.cache = SimpleCache()
     return app

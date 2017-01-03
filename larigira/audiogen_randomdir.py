@@ -3,15 +3,8 @@ import logging
 import shutil
 import random
 from tempfile import mkstemp
-import fnmatch
 
-
-def scan_dir(dirname, extension=None):
-    if extension is None:
-        extension = '*'
-    for root, dirnames, filenames in os.walk(dirname):
-        for fname in fnmatch.filter(filenames, extension):
-            yield os.path.join(root, fname)
+from larigira.fsutils import scan_dir
 
 
 def generate(spec):

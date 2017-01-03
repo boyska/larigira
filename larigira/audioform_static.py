@@ -3,12 +3,15 @@ from __future__ import print_function
 from flask_wtf import Form
 from wtforms import StringField, validators, SubmitField
 
+from larigira.formutils import AutocompleteStringField
+
 
 class StaticAudioForm(Form):
     nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    path = StringField('Path', validators=[validators.required()],
-                       description='Full path to audio file')
+    path = AutocompleteStringField('dl-suggested-files',
+                                   'Path', validators=[validators.required()],
+                                   description='Full path to audio file')
     submit = SubmitField('Submit')
 
     def populate_from_audiospec(self, audiospec):
