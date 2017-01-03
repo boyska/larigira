@@ -2,12 +2,15 @@ from pytimeparse.timeparse import timeparse
 from flask_wtf import Form
 from wtforms import StringField, validators, SubmitField, ValidationError
 
+from larigira.formutils import AutocompleteStringField
+
 
 class AudioForm(Form):
     nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    path = StringField('Path', validators=[validators.required()],
-                       description='Directory to pick file from')
+    path = AutocompleteStringField('dl-suggested-dirs',
+                                   'Path', validators=[validators.required()],
+                                   description='Directory to pick file from')
     maxage = StringField('Max age',
                          validators=[validators.required()],
                          description='in seconds, or human-readable '

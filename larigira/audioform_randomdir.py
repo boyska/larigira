@@ -1,12 +1,15 @@
 import flask_wtf
 from wtforms import StringField, validators, SubmitField, IntegerField
 
+from larigira.formutils import AutocompleteStringField
+
 
 class Form(flask_wtf.Form):
     nick = StringField('Audio nick', validators=[validators.required()],
                        description='A simple name to recognize this audio')
-    path = StringField('Path', validators=[validators.required()],
-                       description='Full path to source directory')
+    path = AutocompleteStringField('dl-suggested-dirs',
+                                   'Path', validators=[validators.required()],
+                                   description='Full path to source directory')
     howmany = IntegerField('Number', validators=[validators.optional()],
                            default=1,
                            description='How many songs to be picked'

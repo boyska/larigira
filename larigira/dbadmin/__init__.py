@@ -43,6 +43,29 @@ def get_suggested_files():
     return files
 
 
+def get_suggested_dirs():
+    dirset = set()
+    for f in get_suggested_files():
+        dirpath = os.path.dirname(f)
+        while dirpath:
+            if dirpath in dirset:
+                break
+            dirset.add(dirpath)
+            dirpath = os.path.dirname(dirpath)
+
+    return list(dirset)
+
+
+def get_suggestions():
+    files = get_suggested_files()
+    if len(files) > 200:
+        current_app.logger.warn("Too many suggested files, cropping")
+        files = files[:200]
+    return dict(
+        files=files,
+        dirs=get_suggested_dirs())
+
+
 @db.route('/')
 def home():
     return render_template('dbadmin_base.html')
@@ -81,7 +104,8 @@ def edit_time(alarmid):
         data = receiver(form)
         model.update_alarm(alarmid, data)
         model.reload()
-        return redirect(url_for('db.list', _anchor='event-%d' % alarmid))
+        return redirect(url_for('db.events_list',
+                                _anchor='event-%d' % alarmid))
     return render_template('add_time_kind.html',
                            form=form,
                            kind=kind,
@@ -124,7 +148,8 @@ def addaudio_kind(kind):
         return jsonify(dict(inserted=eid, data=data))
 
     return render_template('add_audio_kind.html', form=form, kind=kind,
-                          suggested_files=get_suggested_files())
+                           suggestions=get_suggestions()
+                           )
 
 
 @db.route('/edit/audio/<int:actionid>', methods=['GET', 'POST'])
@@ -140,12 +165,12 @@ def edit_audio(actionid):
         data = receiver(form)
         model.update_action(actionid, data)
         model.reload()
-        return redirect(url_for('db.list'))
+        return redirect(url_for('db.events_list'))
     return render_template('add_audio_kind.html',
                            form=form,
                            kind=kind,
                            mode='edit',
-                           suggested_files=get_suggested_files()
+                           suggestions=get_suggestions()
                            )
 
 
