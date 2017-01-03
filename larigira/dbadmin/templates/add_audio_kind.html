@@ -2,6 +2,36 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Larigira - DB add audio "{{kind}}" {%endblock%}
+{% block scripts %}
+	{{super()}}
+	<script type="text/javascript">
+function check_suggestion(el) {
+	val = $(el).val();
+	datalist = $(document.getElementById($(el).attr('list')));
+	values = $('option', datalist).map(function(i, x) { return $(x).attr('value'); });
+	if($.inArray(val, values) != -1) {
+		$(el).closest('div.form-group').removeClass('has-warning has-feedback');
+		$('.not-in-datalist', $(el).parent()).remove()
+	} else {
+		$(el).closest('div.form-group').addClass('has-warning has-feedback');
+		if($('.not-in-datalist', $(el).parent()).length === 0) {
+			$(el).parent().append($('<span class="not-in-datalist glyphicon glyphicon-warning-sign form-control-feedback"/>'))
+			$(el).parent().append($('<span/>')
+					.addClass('help-block not-in-datalist')
+					.text('Warning: larigira is not sure this path is correct'));
+		}
+	}
+}
+$(function() {
+	$('input[list]').each(function(i, el) {
+	check_suggestion(el);
+	})
+});
+$('form').on('change keyup', 'input[list]', function(evt) {
+	check_suggestion(evt.target);
+});
+	</script>
+{%endblock scripts %}
 
 {% block content %}
 {% if form.errors %}
