@@ -1,5 +1,22 @@
 {% extends "dbadmin_base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{%block scripts%}
+<script src="{{url_for('static', filename='webshim/polyfiller.js')}}"
+				type="text/javascript"></script>
+<script type="text/javascript">
+webshim.setOptions('forms-ext', {
+	'types': 'datetime-local',
+	'datetime-local': {
+		'classes': 'show-uparrow inputbtns-outside',
+		'openOnFocus': false,
+		'yearSelect' : true,
+		'stepfactor': 60,
+	}
+});
+webshim.polyfill('forms-ext');
+</script>
+{{super()}}
+{%endblock%}
 
 {% block title %}Larigira - DB add time "{{kind}}" {%endblock%}
 
