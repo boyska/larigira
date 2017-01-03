@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger('timeform_base')
+
 from datetime import datetime
 from pytimeparse.timeparse import timeparse
 
@@ -10,33 +13,45 @@ import wtforms.widgets
 class DateTimeInput(wtforms.widgets.Input):
     input_type = 'datetime-local'
 
+    def __call__(self, field, **kwargs):
+        # every second can be specified
+        return super(DateTimeInput, self).__call__(field, step='1', **kwargs)
+
 
 class EasyDateTimeField(Field):
     '''
     a "fork" of DateTimeField which uses HTML5 datetime-local
-    The format is not customizable, because it is imposed by the HTML5 specification
+
+    The format is not customizable, because it is imposed by the HTML5
+    specification.
+
+    This field does not ensure that browser actually supports datetime-local
+    input type, nor does it provide polyfills.
     '''
     widget = DateTimeInput()
+    formats = ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M')
 
     def __init__(self, label=None, validators=None, **kwargs):
         super(EasyDateTimeField, self).__init__(label, validators, **kwargs)
-        self.format = '%Y-%m-%dT%H:%M:%S'
 
     def _value(self):
         if self.raw_data:
             return ' '.join(self.raw_data)
         else:
-            return self.data and self.data.strftime(self.format) or ''
+            return self.data and self.data.strftime(self.formats[0]) or ''
 
     def process_formdata(self, valuelist):
         if valuelist:
             date_str = ' '.join(valuelist)
-            try:
-                self.data = datetime.strptime(date_str, self.format)
-            except ValueError:
-                self.data = None
-                raise ValueError(self.gettext(
-                    'Not a valid datetime value <tt>{}</tt>').format(date_str))
+            for fmt in self.formats:
+                try:
+                    self.data = datetime.strptime(date_str, fmt)
+                    return
+                except ValueError:
+                    log.debug('Format `%s` not valid for `%s`' %
+                              (fmt, date_str))
+            raise ValueError(self.gettext(
+                'Not a valid datetime value <tt>{}</tt>').format(date_str))
 
 
 class SingleAlarmForm(Form):
