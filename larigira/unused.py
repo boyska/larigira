@@ -5,9 +5,26 @@ This component will look for files to be removed. There are some assumptions:
     * MPD URIs are parsed, and only file:/// is supported
 '''
 import os
-from os.path import commonpath, normpath
+from os.path import normpath
 import logging
 import mpd
+
+
+def old_commonpath(directories):
+    if any(p for p in directories if p.startswith('/')) and \
+       any(p for p in directories if not p.startswith('/')):
+        raise ValueError("Can't mix absolute and relative paths")
+    norm_paths = [normpath(p) + os.path.sep for p in directories]
+    ret = os.path.dirname(os.path.commonprefix(norm_paths))
+    if len(ret) > 0 and ret == '/' * len(ret):
+        return '/'
+    return ret
+
+
+try:
+    from os.path import commonpath
+except ImportError:
+    commonpath = old_commonpath
 
 
 class UnusedCleaner:
