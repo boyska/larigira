@@ -41,6 +41,8 @@ def get_suggested_dirs():
 
 def get_suggested_scripts():
     base = get_conf()['SCRIPTS_PATH']
+    if not base or not os.path.isdir(base):
+        return []
     fnames = [f for f in os.listdir(base)
               if os.access(os.path.join(base, f), os.R_OK | os.X_OK)]
     return fnames
