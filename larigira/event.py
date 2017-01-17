@@ -23,7 +23,7 @@ class EventModel(object):
     def reload(self):
         if self.db is not None:
             self.db.close()
-        self.db = TinyDB(self.uri)
+        self.db = TinyDB(self.uri, indent=2)
         self.actions = self.db.table('actions')
         self.alarms = self.db.table('alarms')
 
