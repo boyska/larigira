@@ -16,7 +16,7 @@ def generate_by_artist(spec):
     c.connect(conf['MPD_HOST'], conf['MPD_PORT'])
 
     artists = c.list('artist')
-    log.debug("got %d artists" % len(artists))
+    log.debug("got %d artists", len(artists))
     if not artists:
         raise ValueError("no artists in your mpd database")
     for _ in range(spec['howmany']):

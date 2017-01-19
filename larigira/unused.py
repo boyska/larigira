@@ -50,7 +50,7 @@ class UnusedCleaner:
         if 'TMPDIR' in self.conf and self.conf['TMPDIR'] \
            and commonpath([self.conf['TMPDIR'], fpath]) != \
            normpath(self.conf['TMPDIR']):
-            self.log.info('Not watching file {}: not in TMPDIR'.format(fpath))
+            self.log.info('Not watching file %s: not in TMPDIR', fpath)
             return
         if not os.path.exists(fpath):
             self.log.warning('a path that does not exist is being monitored')
@@ -63,7 +63,7 @@ class UnusedCleaner:
                              if song['file'].startswith('/')}
         for fpath in self.waiting_removal_files - files_in_playlist:
             # we can remove it!
-            self.log.debug('removing unused: {}'.format(fpath))
+            self.log.debug('removing unused: %s', fpath)
             self.waiting_removal_files.remove(fpath)
             if os.path.exists(fpath):
                 os.unlink(fpath)

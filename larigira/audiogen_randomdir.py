@@ -23,7 +23,7 @@ def generate(spec):
     found_files = set()
     for path in spec['paths']:
         if not os.path.exists(path):
-            logging.warn("Can't find requested path: %s" % path)
+            logging.warn("Can't find requested path: %s", path)
             continue
         if os.path.isfile(path):
             found_files.add(path)

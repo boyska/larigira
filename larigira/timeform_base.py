@@ -78,7 +78,7 @@ class FrequencyAlarmForm(Form):
             self.weekdays.data = list('1234567')
         self.interval.data = timespec['interval']
 
-    def validate_interval(form, field):
+    def validate_interval(self, field):
         try:
             int(field.data)
         except ValueError:

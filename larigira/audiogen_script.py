@@ -52,7 +52,7 @@ def generate(spec):
                          % (spec['name'], os.stat(scriptpath).st_uid,
                             os.getuid()))
     try:
-        log.info('Going to run {}'.format([scriptpath] + args))
+        log.info('Going to run %s', [scriptpath] + args)
         env = dict(
             HOME=os.environ['HOME'],
             PATH=os.environ['PATH'],

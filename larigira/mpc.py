@@ -41,8 +41,8 @@ class MpcWatcher(ParentedLet):
                 status = self.client.idle()[0]
             except (mpd.ConnectionError, ConnectionRefusedError,
                     FileNotFoundError) as exc:
-                self.log.warning('Connection to MPD failed ({}: {})'.
-                                 format(exc.__class__.__name__, exc))
+                self.log.warning('Connection to MPD failed (%s: %s)',
+                                 exc.__class__.__name__, exc)
                 self.client = None
                 first_after_connection = True
                 gevent.sleep(5)
@@ -67,8 +67,8 @@ class Player:
             mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
         except (mpd.ConnectionError, ConnectionRefusedError,
                 FileNotFoundError) as exc:
-            self.log.warning('Connection to MPD failed ({}: {})'.
-                             format(exc.__class__.__name__, exc))
+            self.log.warning('Connection to MPD failed (%s: %s)',
+                             exc.__class__.__name__, exc)
             raise gevent.GreenletExit()
         return mpd_client
 
@@ -116,22 +116,23 @@ class Player:
         assert 'uris' in songs
         spec = [aspec.get('nick', aspec.eid) for aspec in songs['audiospecs']]
         if not self.events_enabled:
-            self.log.debug('Ignoring <{}> (events disabled)'.format(
-                ','.join(spec)
-            ))
+            self.log.debug('Ignoring <%s> (events disabled)',
+                           ','.join(spec)
+                           )
             return
         mpd_client = self._get_mpd()
         for uri in reversed(songs['uris']):
             assert type(uri) is str
-            self.log.info('Adding {} to playlist (from <{}>:{}={})'.
-                          format(uri, songs['timespec'].get('nick', ''),
-                                 songs['aids'], spec))
+            self.log.info('Adding %s to playlist (from <%s>:%s=%s)',
+                          uri,
+                          songs['timespec'].get('nick', ''),
+                          songs['aids'], spec)
             insert_pos = 0 if len(mpd_client.playlistid()) == 0 else \
                 int(mpd_client.currentsong().get('pos', 0)) + 1
             try:
                 mpd_client.addid(uri, insert_pos)
             except mpd.CommandError:
-                self.log.exception("Cannot insert song {}".format(uri))
+                self.log.exception("Cannot insert song %s", uri)
             self.tmpcleaner.watch(uri.strip())
 
 
@@ -190,4 +191,4 @@ class Controller(gevent.Greenlet):
                 self.monitor.q.put(dict(kind='forcetick'))
                 gevent.Greenlet.spawn(self.player.check_playlist)
             else:
-                self.log.warning("Unknown message: %s" % str(value))
+                self.log.warning("Unknown message: %s", str(value))

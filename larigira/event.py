@@ -106,7 +106,7 @@ class Monitor(ParentedLet):
             when = next(timegenerate(timespec, now=now))
         except:
             logging.exception("Could not generate "
-                              "an alarm from timespec {}".format(timespec))
+                              "an alarm from timespec %s", timespec)
         if when is None:
             # expired
             return None
@@ -131,16 +131,17 @@ class Monitor(ParentedLet):
             # but it is "tricky"; any small delay would cause the event to be
             # missed
             if delta is not None and delta <= 2*self.conf['EVENT_TICK_SECS']:
-                self.log.debug('Scheduling event {} ({}s) => {}'
-                               .format(alarm.get('nick', alarm.eid),
-                                       delta,
-                                       [a.get('nick', a.eid) for a in actions]
-                                       ))
+                self.log.debug('Scheduling event %s (%ds) => %s',
+                               alarm.get('nick', alarm.eid),
+                               delta if delta is not None else -1,
+                               [a.get('nick', a.eid) for a in actions]
+                               )
                 self.schedule(alarm, actions, delta)
             else:
-                self.log.debug('Skipping event {}, too far ({}s)'
-                               .format(alarm.get('nick', alarm.eid),
-                                       delta))
+                self.log.debug('Skipping event %s too far (%ds)',
+                               alarm.get('nick', alarm.eid),
+                               delta if delta is not None else -1,
+                               )
 
     def schedule(self, timespec, audiospecs, delta=None):
         '''
@@ -173,16 +174,16 @@ class Monitor(ParentedLet):
         if timespec.eid in self.running:
             del self.running[timespec.eid]
         else:
-            self.log.warn('Timespec {} completed but not in running '
-                          'registry; this is most likely a bug'.
-                          format(timespec.get('nick', timespec.eid)))
+            self.log.warn('Timespec %s completed but not in running '
+                          'registry; this is most likely a bug',
+                          timespec.get('nick', timespec.eid))
         uris = []
         for audiospec in audiospecs:
             try:
                 uris.extend(audiogenerate(audiospec))
             except:
-                self.log.error('audiogenerate for {} failed'
-                               .format(audiospec))
+                self.log.error('audiogenerate for %s failed',
+                               str(audiospec))
         self.send_to_parent('uris_enqueue',
                             dict(uris=uris,
                                  timespec=timespec,
@@ -198,4 +199,4 @@ class Monitor(ParentedLet):
             if kind in ('forcetick', 'timer'):
                 gevent.spawn(self.on_tick)
             else:
-                self.log.warning("Unknown message: %s" % str(value))
+                self.log.warning("Unknown message: %s", str(value))
