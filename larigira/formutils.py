@@ -57,8 +57,7 @@ class EasyDateTimeField(Field):
     def _value(self):
         if self.raw_data:
             return ' '.join(self.raw_data)
-        else:
-            return self.data and self.data.strftime(self.formats[0]) or ''
+        return self.data and self.data.strftime(self.formats[0]) or ''
 
     def process_formdata(self, valuelist):
         if valuelist:
