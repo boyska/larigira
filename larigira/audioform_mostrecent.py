@@ -17,7 +17,7 @@ class AudioForm(Form):
                          '(like 9w3d12h)')
     submit = SubmitField('Submit')
 
-    def validate_maxage(form, field):
+    def validate_maxage(self, field):
         try:
             int(field.data)
         except ValueError:

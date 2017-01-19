@@ -45,6 +45,7 @@ class SingleAlarm(Alarm):
     description = 'Only once, at a specified date and time'
 
     def __init__(self, obj):
+        super().__init__()
         self.dt = getdate(obj['timestamp'])
 
     def next_ring(self, current_time=None):

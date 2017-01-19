@@ -25,7 +25,7 @@ class ScriptAudioForm(Form):
             else:
                 self.args.data = ';'.join(audiospec['args'])
 
-    def validate_name(form, field):
+    def validate_name(self, field):
         if '/' in field.data:
             raise ValidationError("Name cannot have slashes: "
                                   "it's a name, not a path")
