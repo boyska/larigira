@@ -65,13 +65,13 @@ def generate(spec):
                                       env=env,
                                       cwd='/')
     except subprocess.CalledProcessError as exc:
-        log.error("Error %d when running script %s" %
-                  (exc.returncode, spec['name']))
+        log.error("Error %d when running script %s",
+                  exc.returncode, spec['name'])
         return []
 
     out = out.decode('utf-8')
     out = [p for p in out.split('\n') if p]
-    logging.debug('Script %s produced %d files' % (spec['name'], len(out)))
+    logging.debug('Script %s produced %d files', spec['name'], len(out))
     return out
 generate.description = 'Generate audio through an external script. ' \
 'Experts only.'

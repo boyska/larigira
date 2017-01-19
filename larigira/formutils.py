@@ -68,7 +68,7 @@ class EasyDateTimeField(Field):
                     self.data = datetime.strptime(date_str, fmt)
                     return
                 except ValueError:
-                    log.debug('Format `%s` not valid for `%s`' %
-                              (fmt, date_str))
+                    log.debug('Format `%s` not valid for `%s`',
+                              fmt, date_str)
             raise ValueError(self.gettext(
                 'Not a valid datetime value <tt>{}</tt>').format(date_str))

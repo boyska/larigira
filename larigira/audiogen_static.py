@@ -15,7 +15,7 @@ def generate(spec):
 
     for path in spec['paths']:
         if not os.path.exists(path):
-            logging.warn("Can't find requested path: %s" % path)
+            logging.warn("Can't find requested path: %s", path)
             continue
         tmp = mkstemp(suffix=os.path.splitext(path)[-1],
                       prefix='audiogen-static-')
