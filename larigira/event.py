@@ -130,17 +130,20 @@ class Monitor(ParentedLet):
             # why this 2*EVENT_TICK_SECS? EVENT_TICK_SECS would be enough,
             # but it is "tricky"; any small delay would cause the event to be
             # missed
-            if delta is not None and delta <= 2*self.conf['EVENT_TICK_SECS']:
+            if delta is None:
+                self.log.debug('Skipping event %s: will never ring',
+                               alarm.get('nick', alarm.eid))
+            elif delta <= 2*self.conf['EVENT_TICK_SECS']:
                 self.log.debug('Scheduling event %s (%ds) => %s',
                                alarm.get('nick', alarm.eid),
-                               delta if delta is not None else -1,
+                               delta,
                                [a.get('nick', a.eid) for a in actions]
                                )
                 self.schedule(alarm, actions, delta)
             else:
                 self.log.debug('Skipping event %s too far (%ds)',
                                alarm.get('nick', alarm.eid),
-                               delta if delta is not None else -1,
+                               delta,
                                )
 
     def schedule(self, timespec, audiospecs, delta=None):
