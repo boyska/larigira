@@ -174,9 +174,9 @@ class Monitor(ParentedLet):
         if timespec.eid in self.running:
             del self.running[timespec.eid]
         else:
-            self.log.warn('Timespec %s completed but not in running '
-                          'registry; this is most likely a bug',
-                          timespec.get('nick', timespec.eid))
+            self.log.warning('Timespec %s completed but not in running '
+                             'registry; this is most likely a bug',
+                             timespec.get('nick', timespec.eid))
         uris = []
         for audiospec in audiospecs:
             try:

@@ -17,7 +17,7 @@ def recent_choose(paths, howmany, minepoch):
     found_files = {}
     for path in paths:
         if not os.path.exists(path):
-            logging.warn("Can't find requested path: %s", path)
+            logging.warning("Can't find requested path: %s", path)
             continue
         if os.path.isfile(path):
             found_files[path] = get_mtime(path)

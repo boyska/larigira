@@ -134,7 +134,7 @@ def rpc_wip():
             if obid in roots:
                 continue
             if obid not in tree:
-                current_app.logger.warn('How strange, {} not in tree'
+                current_app.logger.warning('How strange, {} not in tree'
                                         .format(obid))
                 continue
             tree[tree[obid]['parent']]['children'][obid] = tree[obid]

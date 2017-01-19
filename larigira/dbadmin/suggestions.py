@@ -15,7 +15,7 @@ def get_suggested_files():
     files = []
     for path in get_conf()['FILE_PATH_SUGGESTION']:
         if not os.path.isdir(path):
-            current_app.logger.warn('Invalid suggestion path: %s' % path)
+            current_app.logger.warning('Invalid suggestion path: %s' % path)
             continue
         pathfiles = scan_dir_audio(path)
         files.extend(pathfiles)
@@ -51,7 +51,7 @@ def get_suggested_scripts():
 def get_suggestions():
     files = get_suggested_files()
     if len(files) > 200:
-        current_app.logger.warn("Too many suggested files, cropping")
+        current_app.logger.warning("Too many suggested files, cropping")
         files = files[:200]
     return dict(
         files=files,
