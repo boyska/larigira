@@ -58,8 +58,8 @@ class UnusedCleaner:
 
     def check_playlist(self):
         '''check playlist + internal watchlist to see what can be removed'''
-        mpd = self._get_mpd()
-        files_in_playlist = {song['file'] for song in mpd.playlistid()
+        mpdc = self._get_mpd()
+        files_in_playlist = {song['file'] for song in mpdc.playlistid()
                              if song['file'].startswith('/')}
         for fpath in self.waiting_removal_files - files_in_playlist:
             # we can remove it!

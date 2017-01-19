@@ -4,7 +4,7 @@ import signal
 
 import gevent
 from gevent.queue import Queue
-from mpd import MPDClient, ConnectionError, CommandError
+import mpd
 
 from .event import Monitor
 from .eventutils import ParentedLet, Timer
@@ -13,7 +13,7 @@ from .unused import UnusedCleaner
 
 
 def get_mpd_client(conf):
-    client = MPDClient(use_unicode=True)
+    client = mpd.MPDClient(use_unicode=True)
     client.connect(conf['MPD_HOST'], conf['MPD_PORT'])
 
     return client
@@ -39,7 +39,7 @@ class MpcWatcher(ParentedLet):
                     yield('mpc', 'connect')
 
                 status = self.client.idle()[0]
-            except (ConnectionError, ConnectionRefusedError,
+            except (mpd.ConnectionError, ConnectionRefusedError,
                     FileNotFoundError) as exc:
                 self.log.warning('Connection to MPD failed ({}: {})'.
                                  format(exc.__class__.__name__, exc))
@@ -62,10 +62,10 @@ class Player:
         self.events_enabled = True
 
     def _get_mpd(self):
-        mpd_client = MPDClient(use_unicode=True)
+        mpd_client = mpd.MPDClient(use_unicode=True)
         try:
             mpd_client.connect(self.conf['MPD_HOST'], self.conf['MPD_PORT'])
-        except (ConnectionError, ConnectionRefusedError,
+        except (mpd.ConnectionError, ConnectionRefusedError,
                 FileNotFoundError) as exc:
             self.log.warning('Connection to MPD failed ({}: {})'.
                              format(exc.__class__.__name__, exc))
@@ -82,12 +82,12 @@ class Player:
                 if spec is None else spec
 
         def clear_everything_but_current_song():
-            mpd = self._get_mpd()
-            current = mpd.currentsong()
+            mpdc = self._get_mpd()
+            current = mpdc.currentsong()
             pos = int(current.get('pos', 0))
-            for song in mpd.playlistid():
+            for song in mpdc.playlistid():
                 if int(song['pos']) != pos:
-                    mpd.deleteid(song['id'])
+                    mpdc.deleteid(song['id'])
 
         gevent.Greenlet.spawn(clear_everything_but_current_song)
 
@@ -130,7 +130,7 @@ class Player:
                 int(mpd_client.currentsong().get('pos', 0)) + 1
             try:
                 mpd_client.addid(uri, insert_pos)
-            except CommandError:
+            except mpd.CommandError:
                 self.log.exception("Cannot insert song {}".format(uri))
             self.tmpcleaner.watch(uri.strip())
 
@@ -161,7 +161,7 @@ class Controller(gevent.Greenlet):
         gevent.Greenlet.spawn(self.player.check_playlist)
         while True:
             value = self.q.get()
-            self.log.debug('<- %s' % str(value))
+            self.log.debug('<- %s', str(value))
             # emitter = value['emitter']
             kind = value['kind']
             args = value['args']
