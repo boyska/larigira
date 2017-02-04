@@ -20,7 +20,7 @@ import os
 import subprocess
 
 from .config import get_conf
-log = logging.getLogger('audioscript')
+log = logging.getLogger(__name__)
 
 
 def generate(spec):
