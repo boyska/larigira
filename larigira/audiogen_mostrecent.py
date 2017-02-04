@@ -7,6 +7,7 @@ from tempfile import mkstemp
 from pytimeparse.timeparse import timeparse
 
 from larigira.fsutils import scan_dir
+log = logging.getLogger(__name__)
 
 
 def get_mtime(fname):
@@ -17,7 +18,7 @@ def recent_choose(paths, howmany, minepoch):
     found_files = {}
     for path in paths:
         if not os.path.exists(path):
-            logging.warning("Can't find requested path: %s", path)
+            log.warning("Can't find requested path: %s", path)
             continue
         if os.path.isfile(path):
             found_files[path] = get_mtime(path)
@@ -66,6 +67,8 @@ def generate(spec):
                       prefix='audiogen-randomdir-')
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
+        log.info("copying %s -> %s", path, os.path.basename(tmp[1]))
         yield 'file://{}'.format(tmp[1])
+
 
 generate.description = 'Select most recent file inside a directory'
