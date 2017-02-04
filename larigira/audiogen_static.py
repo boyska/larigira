@@ -2,6 +2,8 @@ import os
 import logging
 import shutil
 from tempfile import mkstemp
+
+from larigira.fsutils import shortname
 log = logging.getLogger(__name__)
 
 
@@ -19,7 +21,7 @@ def generate(spec):
             log.warning("Can't find requested path: %s", path)
             continue
         tmp = mkstemp(suffix=os.path.splitext(path)[-1],
-                      prefix='audiogen-static-')
+                      prefix='static-%s-' % shortname(path))
         os.close(tmp[0])
         log.info("copying %s -> %s", path, os.path.basename(tmp[1]))
         shutil.copy(path, tmp[1])

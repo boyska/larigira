@@ -22,3 +22,10 @@ def scan_dir_audio(dirname, extensions=('mp3', 'oga', 'wav', 'ogg')):
         for fname in filenames:
             if multi_fnmatch(fname, extensions):
                 yield os.path.join(root, fname)
+
+
+def shortname(path):
+    name = os.path.basename(path)  # filename
+    name = name.rsplit('.', 1)[0]   # no extension
+    name = ''.join(c for c in name if c.isalnum())  # no strange chars
+    return name

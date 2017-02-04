@@ -4,7 +4,7 @@ import shutil
 import random
 from tempfile import mkstemp
 
-from larigira.fsutils import scan_dir
+from larigira.fsutils import scan_dir, shortname
 log = logging.getLogger(__name__)
 
 
@@ -35,7 +35,7 @@ def generate(spec):
 
     for path in picked:
         tmp = mkstemp(suffix=os.path.splitext(path)[-1],
-                      prefix='randomdir-')
+                      prefix='randomdir-%s-' % shortname(path))
         os.close(tmp[0])
         shutil.copy(path, tmp[1])
         log.info("copying %s -> %s", path, os.path.basename(tmp[1]))
