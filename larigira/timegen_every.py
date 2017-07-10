@@ -114,8 +114,8 @@ class FrequencyAlarm(Alarm):
                 current_time = ring
                 continue
             return ring
-        log.warning("Can't find a valid time for event; "
-                    "something went wrong")
+        log.warning("Can't find a valid time for event %s; "
+                    "something went wrong", str(self))
         return None
 
     def has_ring(self, current_time=None):
