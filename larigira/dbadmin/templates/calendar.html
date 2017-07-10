@@ -19,6 +19,15 @@ $('li.alarm').click(function() {
 	var audio = $('<p/>').append($('<a/>').text('Modifica audio evento').attr('href', 'edit/event/' + alarmid));
 	$('<div/>').append(time).append(audio).dialog({modal: true, title: "Evento " + $(this).text()});
 });
+
+$(document).tooltip({
+	items: "li.alarm",
+	content: function() {
+		var el = $(this);
+		return el.find('.alarm-actions').html();
+	}
+});
+
 });
 </script>
 {%endblock%}
@@ -27,6 +36,7 @@ $('li.alarm').click(function() {
 <style>
 .soft-highlight { background-color: rgba(230, 230, 118, 0.36); }
 time { transition: background-color 500ms; }
+li.alarm .alarm-actions { display: none; }
 </style>
 {% endblock %}
 
@@ -44,7 +54,9 @@ time { transition: background-color 500ms; }
 		<time>{{t.time()}}</time>
 		<ul>
 		{% for alarm, actions in days[day][t] %}
-		<li class="alarm" data-alarmid="{{alarm.eid}}">{{alarm.nick}}</li>
+		<li class="alarm" data-alarmid="{{alarm.eid}}">{{alarm.nick}}
+			<div class="alarm-actions">{% for a in actions %}{{a.nick}}{%endfor%}</div>
+		</li>
 		{% endfor %}
 		</ul>
 		</div>
