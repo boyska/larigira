@@ -29,6 +29,7 @@ def get_conf(prefix='LARIGIRA_'):
     conf['LOG_CONFIG'] = False
     conf['TMPDIR'] = os.getenv('TMPDIR', '/tmp/')
     conf['FILE_PATH_SUGGESTION'] = ()  # tuple of paths
+    conf['UI_CALENDAR_FREQUENCY_THRESHOLD'] = 4*60*60  # 4 hours
     conf.update(from_envvars(prefix=prefix))
     return conf
 

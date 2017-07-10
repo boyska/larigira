@@ -1,0 +1,59 @@
+{% extends "dbadmin_base.html" %}
+{%block scripts%}
+{{super()}}
+<script type="text/javascript">
+$(function() {
+	$('.button').button({
+		icons: {
+			primary: 'ui-icon-pencil'
+		}
+	});
+
+$('li.alarm').hover( function() {
+	var sel = 'li.alarm[data-alarmid="' + $(this).data('alarmid') + '"]'
+		$(sel).closest('div').find('time').toggleClass('soft-highlight');
+});
+$('li.alarm').click(function() {
+	var alarmid = $(this).data('alarmid');
+	var time = $('<p/>').append($('<a/>').text('Modifica orario evento').attr('href', 'edit/time/' + alarmid));
+	var audio = $('<p/>').append($('<a/>').text('Modifica audio evento').attr('href', 'edit/event/' + alarmid));
+	$('<div/>').append(time).append(audio).dialog({modal: true, title: "Evento " + $(this).text()});
+});
+});
+</script>
+{%endblock%}
+{% block styles%}
+{{super()}}
+<style>
+.soft-highlight { background-color: rgba(230, 230, 118, 0.36); }
+time { transition: background-color 500ms; }
+</style>
+{% endblock %}
+
+
+{% block title %}Larigira - Calendar{%endblock%}
+
+{% block content %}
+<div class="container-fluid">
+	{% for week in weeks %}
+	<div class="week row">
+	{% for day in weeks[week] %}
+	<div class="day col-lg-2 col-md-3 col-sm-6 col-xs-12"><h2>{{day}}</h2>
+		{% for t in days[day] %}
+		<div>
+		<time>{{t.time()}}</time>
+		<ul>
+		{% for alarm, actions in days[day][t] %}
+		<li class="alarm" data-alarmid="{{alarm.eid}}">{{alarm.nick}}</li>
+		{% endfor %}
+		</ul>
+		</div>
+		{%endfor %}
+		</div><!-- day {{day}} -->
+		{% endfor %}
+	</div><!-- week {{week}} -->
+	<hr/>
+		{%endfor %}
+	</div><!-- container -->
+{% endblock content %}
+{# vim: set ts=2 sw=2 noet: #}
