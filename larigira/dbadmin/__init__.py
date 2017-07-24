@@ -6,7 +6,6 @@ Templates are self-contained in this directory
 from __future__ import print_function
 from datetime import datetime, timedelta, time
 from collections import defaultdict
-import itertools
 
 from flask import current_app, Blueprint, render_template, jsonify, abort, \
     request, redirect, url_for
@@ -44,10 +43,10 @@ def events_calendar():
     model = current_app.larigira.controller.monitor.model
     today = datetime.now().date()
     maxdays = 30
+    # {date: {datetime: [(alarm1,actions1), (alarm2,actions2)]}}
     days = defaultdict(lambda: defaultdict(list))
     freq_threshold = get_conf()['UI_CALENDAR_FREQUENCY_THRESHOLD']
     for alarm in model.get_all_alarms():
-        print('al', alarm.get('nick', alarm))
         if freq_threshold and alarm['kind'] == 'frequency' and \
            FrequencyAlarm(alarm).interval < freq_threshold:
             continue
@@ -56,17 +55,15 @@ def events_calendar():
             continue
         t = datetime.fromtimestamp(int(today.strftime('%s')))
         for t in timegenerate(alarm, now=t, howmany=maxdays):
-            print('   t', t)
             if t is None or \
                t > datetime.combine(today+timedelta(days=maxdays), time()):
                 break
             days[t.date()][t].append((alarm, actions))
 
-    print(days.keys())
+    # { weeknum: [day1, day2, day3] }
     weeks = defaultdict(list)
     for d in sorted(days.keys()):
         weeks[d.isocalendar()[:2]].append(d)
-    print(weeks)
 
     return render_template('calendar.html', days=days, weeks=weeks)
 
@@ -172,7 +169,6 @@ def edit_event(alarmid):
     if alarm is None:
         abort(404)
     allactions = model.get_all_actions()
-    print('all', allactions)
     actions = tuple(model.get_actions_by_alarm(alarm))
     return render_template('edit_event.html',
                            alarm=alarm, all_actions=allactions,

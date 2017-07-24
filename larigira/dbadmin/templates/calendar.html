@@ -35,7 +35,7 @@ $(document).tooltip({
 {{super()}}
 <style>
 .soft-highlight { background-color: rgba(230, 230, 118, 0.36); }
-time { transition: background-color 500ms; }
+time { transition: background-color 500ms; font-weight: bold; }
 li.alarm .alarm-actions { display: none; }
 </style>
 {% endblock %}
@@ -45,16 +45,17 @@ li.alarm .alarm-actions { display: none; }
 
 {% block content %}
 <div class="container-fluid">
-	{% for week in weeks %}
-	<div class="week row">
+	{% for week, weekdays in weeks|dictsort %}
+	<div class="week row" id="week-{{week[0]}}-{{week[1]}}">
 	{% for day in weeks[week] %}
 	<div class="day col-lg-2 col-md-3 col-sm-6 col-xs-12"><h2>{{day}}</h2>
-		{% for t in days[day] %}
+		{% for t in days[day]|sort %}
 		<div>
-		<time>{{t.time()}}</time>
 		<ul>
 		{% for alarm, actions in days[day][t] %}
-		<li class="alarm" data-alarmid="{{alarm.eid}}">{{alarm.nick}}
+		<li class="alarm" data-alarmid="{{alarm.eid}}">
+		<time>{{t.time()}}</time>
+		{{alarm.nick}}
 			<div class="alarm-actions">{% for a in actions %}{{a.nick}}{%endfor%}</div>
 		</li>
 		{% endfor %}
