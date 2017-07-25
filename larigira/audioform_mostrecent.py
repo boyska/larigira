@@ -26,6 +26,14 @@ class AudioForm(Form):
                                       "(in seconds) or a human-readable "
                                       "string like '1h2m'  or '1d12h'")
 
+    def populate_from_audiospec(self, audiospec):
+        if 'nick' in audiospec:
+            self.nick.data = audiospec['nick']
+        if 'path' in audiospec:
+            self.path.data = audiospec['path']
+        if 'maxage' in audiospec:
+            self.maxage.data = audiospec['maxage']
+
 
 def audio_receive(form):
     return {
