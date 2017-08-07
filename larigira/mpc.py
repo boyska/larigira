@@ -1,6 +1,7 @@
 from __future__ import print_function
 import logging
 import signal
+from pkg_resources import iter_entry_points
 
 import gevent
 from gevent.queue import Queue
@@ -10,6 +11,7 @@ from .event import Monitor
 from .eventutils import ParentedLet, Timer
 from .audiogen import audiogenerate
 from .unused import UnusedCleaner
+from .entrypoints_utils import get_avail_entrypoints
 
 
 def get_mpd_client(conf):
@@ -111,14 +113,53 @@ class Player:
         picker.link_value(add)
         picker.start()
 
+    def enqueue_filter(self, songs):
+        eventfilters = self.conf['EVENT_FILTERS']
+        if not eventfilters:
+            return True, ''
+        availfilters = get_avail_entrypoints('larigira.eventfilter')
+        if len([ef for ef in eventfilters if ef in availfilters]) == 0:
+            return True, ''
+        mpdc = self._get_mpd()
+        status = mpdc.status()
+        ctx = {
+            'playlist': mpdc.playlist(),
+            'status': status,
+            'durations': []
+        }
+        for entrypoint in iter_entry_points('larigira.eventfilter'):
+            if entrypoint.name in eventfilters:
+                ef = entrypoint.load()
+                try:
+                    ret = ef(songs=songs, context=ctx, conf=self.conf)
+                except ImportError as exc:
+                    self.log.warn("Filter %s skipped: %s" % (entrypoint.name,
+                                                             exc))
+                    continue
+                if ret is None:  # bad behavior!
+                    continue
+                if type(ret) is bool:
+                    reason = ''
+                else:
+                    ret, reason = ret
+                reason = 'Filtered by %s (%s)' % (entrypoint.name, reason)
+                if ret is False:
+                    return ret, reason
+        return True, 'Passed through %s' % ','.join(availfilters)
+
     def enqueue(self, songs):
         assert type(songs) is dict
         assert 'uris' in songs
         spec = [aspec.get('nick', aspec.eid) for aspec in songs['audiospecs']]
+        nicks = ','.join((aspec.get('nick', aspec.eid)
+                          for aspec in songs['audiospecs']))
         if not self.events_enabled:
-            self.log.debug('Ignoring <%s> (events disabled)',
-                           ','.join(spec)
+            self.log.debug('Ignoring <%s> (events disabled)', nicks
                            )
+            return
+        filterok, reason = self.enqueue_filter(songs)
+        if not filterok:
+            self.log.debug('Ignoring <%s>, filtered: %s', nicks, reason)
             return
         mpd_client = self._get_mpd()
         for uri in reversed(songs['uris']):

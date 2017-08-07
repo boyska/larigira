@@ -14,6 +14,7 @@ Contents:
    about
    install
    audiogenerators
+   eventfilters
    audiogenerators-write
    debug
    api/modules
