@@ -43,3 +43,17 @@ def test_same_name(tmpdir):
     p.write('')
 
     assert len(candidates([P(tmpdir)])) == 2
+
+
+def test_unknown_mime_ignore(tmpdir):
+    p = tmpdir.join("foo.???")
+    p.write('')
+    assert len(candidates([P(tmpdir)])) == 0
+
+
+def test_unknown_mime_nocrash(tmpdir):
+    p = tmpdir.join("foo.???")
+    p.write('')
+    p = tmpdir.join("foo.ogg")
+    p.write('')
+    assert len(candidates([P(tmpdir)])) == 1

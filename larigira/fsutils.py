@@ -20,6 +20,8 @@ def multi_fnmatch(fname, extensions):
 
 def is_audio(fname):
     mimetype = mimetypes.guess_type(fname)[0]
+    if mimetype is None:
+        return False
     return mimetype.split('/')[0] == 'audio'
 
 
