@@ -1,5 +1,6 @@
 import os
 import fnmatch
+import mimetypes
 
 
 def scan_dir(dirname, extension=None):
@@ -17,10 +18,15 @@ def multi_fnmatch(fname, extensions):
     return False
 
 
+def is_audio(fname):
+    mimetype = mimetypes.guess_type(fname)[0]
+    return mimetype.split('/')[0] == 'audio'
+
+
 def scan_dir_audio(dirname, extensions=('mp3', 'oga', 'wav', 'ogg')):
     for root, dirnames, filenames in os.walk(dirname):
         for fname in filenames:
-            if multi_fnmatch(fname, extensions):
+            if is_audio(fname):
                 yield os.path.join(root, fname)
 
 
