@@ -23,9 +23,36 @@ to 15min. If you have this solution, maybe *percentwait* will better suit your n
 a jingle can wait up to twice its own duration. This is like setting maxtime=4hours for the long shows, but
 maxtime=1minute for jingles. Nice!
 
+Examples
+----------
+
+Fixed wait
+~~~~~~~~~~~~~~~
+
+This snippet will configure larigira to wait a maximum of 5 minutes::
+
+    LARIGIRA_EVENT_FILTERS='["maxwait"]'
+    LARIGIRA_EF_MAXWAIT_SEC=300
+
+(60*5 = 300seconds). This will basically cancel any event that finds a currently playing audio not at its end.
+It can be recommended if you have very accurate timing or don't care about "losing" shows because the one
+preceding it lasted for too long.
+
+Relative wait
+~~~~~~~~~~~~~~~~
+
+This will configure larigira so that a 1-minute jingle can wait for a maximum of 4minutes, while a 20minutes
+event can wait up to 1h20min::
+    
+    LARIGIRA_EVENT_FILTERS='["percentwait"]'
+    LARIGIRA_EF_MAXWAIT_PERC=400
+
+In fact, ``400`` means 400%, that is 4 times the lenght of what we're adding
+
 Write your own
 ----------------
 
 You probably have some very strange usecase here. Things to decide based on your custom naming convention,
 time of the day, moon phase, whatever. So you can and should write your own eventfilter. It often boils down
 to very simple python functions and configuration of an entrypoint for the `larigira.eventfilter` entrypoint.
+
