@@ -48,7 +48,7 @@ setup(name='larigira',
           'tinydb'
       ],
       tests_require=['pytest-timeout==1.0', 'py>=1.4.29', 'pytest==3.0', ],
-      python_requires='>=3.5',
+      python_requires='>=3.4',
       extras_require={
           'percentwait': ['mutagen'],
       },
